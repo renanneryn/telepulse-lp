@@ -1,0 +1,5 @@
+{
+  "name": "Telepulse",
+  "description": "A complete Telegram automation tool for real-time forwarding and history cloning.",
+  "requestFramePermissions": []
+}
