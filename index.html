@@ -3,7 +3,91 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Telepulse - Automação Inteligente para Telegram</title>
+    <title>TelePulse - Automação Inteligente para Telegram</title>
+    <script>
+      /**
+       * CRITICAL SAFEGUARD: Prevent 'TypeError: Cannot set property fetch'
+       * This script must run before ANY other script to intercept attempts by
+       * libraries (like gramjs/telegram) to overwrite read-only globals.
+       */
+      (function() {
+        // 1. Force window.fetch to be writable if it's configurable
+        try {
+          const originalFetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return originalFetch; },
+            set: function(v) { console.warn('Intercepted attempt to overwrite window.fetch'); },
+            configurable: true
+          });
+        } catch (e) {
+          // If fetch is non-configurable on 'window', we'll rely on global Proxy shadowing.
+        }
+
+        // 2. Create a Proxy to shadow 'window' and swallow errors on 'set'
+        const handler = {
+          get(target, prop) {
+            // Redirect global aliases to this Proxy
+            if (prop === 'window' || prop === 'global' || prop === 'self' || prop === 'globalThis') {
+              return safeGlobal;
+            }
+            const val = target[prop];
+            // Bind functions correctly to original 'window' context
+            if (typeof val === 'function') {
+              try {
+                return val.bind(target);
+              } catch (e) {
+                return val;
+              }
+            }
+            return val;
+          },
+          set(target, prop, value) {
+            try {
+              target[prop] = value;
+            } catch (e) {
+              console.warn(`Silenced assignment error for property: ${String(prop)}`);
+            }
+            return true; // Return true to prevent throw in strict mode
+          }
+        };
+
+        const safeGlobal = new Proxy(window, handler);
+
+        // 3. Expose aliases
+        window.global = safeGlobal;
+        
+        // Shadow globalThis if possible
+        try {
+          if (window.globalThis !== safeGlobal) {
+            Object.defineProperty(window, 'globalThis', {
+              value: safeGlobal,
+              configurable: true,
+              writable: true
+            });
+          }
+        } catch (e) {}
+
+        // Shadow self if possible (common target for polyfills)
+        try {
+          Object.defineProperty(window, 'self', {
+            value: safeGlobal,
+            configurable: true,
+            writable: true
+          });
+        } catch (e) {}
+
+        // 4. Polyfill process for node-compat libraries
+        if (typeof window.process === 'undefined') {
+          window.process = { 
+            env: { NODE_ENV: 'production' },
+            nextTick: (cb) => setTimeout(cb, 0),
+            browser: true,
+            version: 'v18.0.0',
+            on: () => {}
+          };
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

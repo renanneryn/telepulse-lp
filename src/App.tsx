@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send } from "lucide-react";
+import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
 
@@ -26,9 +26,10 @@ export default function App() {
   const [phraseIndex, setPhraseIndex] = useState(0);
 
   const phrases = [
-    "Encaminhe em tempo real ou clone históricos completos.",
-    "Substitua textos automaticamente.",
-    "Tudo em um só bot. 100% gratuito."
+    "Transforme conteúdos e troque links automaticamente em tempo real.",
+    "Copie sinais, ofertas ou conteúdos entre Canais e Grupos com perfeição.",
+    "Gerencie dezenas de Canais e Grupos sem precisar de uma equipe.",
+    "A automação definitiva para escalar sua operação no Telegram."
   ];
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function App() {
               <div className="w-10 h-10 bg-[#0F1419] border border-[#0088cc]/50 rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(0,136,204,0.3)]">
                 <Rocket size={24} className="text-[#0088cc]" />
               </div>
-              <span className="font-extrabold text-xl">Telepulse</span>
+              <span className="font-extrabold text-xl">TelePulse</span>
             </div>
             <button 
               onClick={() => setActiveTab("landing")}
@@ -108,7 +109,7 @@ export default function App() {
             <div className="w-12 h-12 bg-[#0F1419] border border-[#0088cc]/50 rounded-xl flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(0,136,204,0.4)]">
               <Rocket size={28} className="text-[#0088cc] neon-text-blue" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight">Telepulse</span>
+            <span className="font-extrabold text-xl tracking-tight">TelePulse</span>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
@@ -175,7 +176,7 @@ export default function App() {
               animate="visible"
               className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
             >
-              {Array.from("A Solução ").map((char, index) => (
+              {Array.from("Escala ").map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -188,27 +189,27 @@ export default function App() {
                 </motion.span>
               ))}
               <span className="gradient-text">
-                {Array.from("Completa").map((char, index) => (
+                {Array.from("Total").map((char, index) => (
                   <motion.span
                     key={index}
                     variants={{
                       hidden: { opacity: 0, y: 10 },
                       visible: { opacity: 1, y: 0 }
                     }}
-                    transition={{ duration: 0.1, delay: (10 + index) * 0.04 }}
+                    transition={{ duration: 0.1, delay: (6 + index) * 0.04 }}
                   >
                     {char}
                   </motion.span>
                 ))}
               </span>
-              {Array.from(" de Automação Para Telegram").map((char, index) => (
+              {Array.from(": Automatize Grupos, Lucre Mais").map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
                     hidden: { opacity: 0, y: 10 },
                     visible: { opacity: 1, y: 0 }
                   }}
-                  transition={{ duration: 0.1, delay: (18 + index) * 0.04 }}
+                  transition={{ duration: 0.1, delay: (11 + index) * 0.04 }}
                 >
                   {char}
                 </motion.span>
@@ -250,6 +251,116 @@ export default function App() {
         </div>
       </section>
 
+      {/* Feature Showcase - The "Meat" of the Bot */}
+      <section className="py-24 px-4 bg-[#0F1419]/50 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal direction="up">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">Confira nossas <span className="text-[#0088cc]">soluções</span></h2>
+            </div>
+          </ScrollReveal>
+
+          {/* Group 1: Core Functions */}
+          <div className="mb-20">
+            <ScrollReveal direction="left">
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span className="w-10 h-1 bg-[#0088cc] rounded-full" /> Recursos Essenciais
+              </h3>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <FeatureDetailCard 
+                icon={<Repeat className="text-[#0088cc]" />}
+                title="Espelhamento de Canais e Grupos"
+                description="Monitore Canais e Grupos e replique instantaneamente nos seus próprios Canais e Grupos."
+              />
+              <FeatureDetailCard 
+                icon={<Copy className="text-[#0088cc]" />}
+                title="Clonagem de Conteúdo"
+                description="Copie todas as mensagens e mídias antigas já postadas. Perfeito para backup ou migração."
+              />
+              <FeatureDetailCard 
+                icon={<Smile className="text-[#0088cc]" />}
+                title="Emojis Premium Preservados"
+                description="Transformações de texto compatíveis com emojis premium do telegram."
+              />
+              <FeatureDetailCard 
+                icon={<Layout className="text-[#0088cc]" />}
+                title="Organização de Mídia"
+                description="Fotos e vídeos agrupados permanecem juntos, favorecendo uma experiência visual agradável para seus leads."
+              />
+            </div>
+          </div>
+
+          {/* Group 2: Differentiators */}
+          <div className="mb-20">
+            <ScrollReveal direction="left">
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span className="w-10 h-1 bg-[#2ECC71] rounded-full" /> Diferenciais Competitivos
+              </h3>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <FeatureDetailCard 
+                icon={<Settings className="text-[#2ECC71]" />}
+                title="Transformação de Textos"
+                description="Remova / Substitua todos os links de uma só vez, substitua o conteúdo inteiro da mensagem pela sua própria copy, e muito mais..."
+                highlight
+              />
+              <FeatureDetailCard 
+                icon={<MousePointer2 className="text-[#2ECC71]" />}
+                title="Botões Personalizados"
+                description="Adicione botões clicáveis com seus próprios links em suas mensagens, tudo 100% personalizável."
+              />
+              <FeatureDetailCard 
+                icon={<Send className="text-[#2ECC71]" />}
+                title="Mensagens Complementares"
+                description="Envie uma mensagem automática logo abaixo da mensagem encaminhada com direito a botões clicáveis e um texto de sua escolha."
+              />
+              <FeatureDetailCard 
+                icon={<Infinity className="text-[#2ECC71]" />}
+                title="Gerenciamento em Massa"
+                description="Rode quantas tarefas quiser ao mesmo tempo. Gerencie grandes Canais e Grupos com facilidade."
+              />
+              <FeatureDetailCard 
+                icon={<Monitor className="text-[#2ECC71]" />}
+                title="Painel Detalhado"
+                description="Acompanhe o progresso de cada automação e saiba exatamente o que está acontecendo."
+              />
+              <FeatureDetailCard 
+                icon={<Repeat className="text-[#2ECC71]" />}
+                title="Ciclo Infinito"
+                description="Mantenha seus Canais e Grupos sempre ativos reenviando conteúdos de forma programada."
+              />
+            </div>
+          </div>
+
+          {/* Group 3: Technical Specs */}
+          <div>
+            <ScrollReveal direction="left">
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span className="w-10 h-1 bg-[#FF6B6B] rounded-full" /> Infraestrutura e Segurança
+              </h3>
+            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <FeatureDetailCard 
+                icon={<Lock className="text-[#FF6B6B]" />}
+                title="Segurança Máxima"
+                description="Sua conta Telegram é protegida. Usamos métodos seguros para evitar bloqueios de API."
+              />
+              <FeatureDetailCard 
+                icon={<Shield className="text-[#FF6B6B]" />}
+                title="Bypass Inteligente"
+                description="Clona até Canais e Grupos que proíbem cópia e encaminhamento."
+              />
+              <FeatureDetailCard 
+                icon={<Clock className="text-[#FF6B6B]" />}
+                title="Blindagem Anti-Ban"
+                description="Intervalos aleatórios que mimetizam humanos, favorecendo sua conta saudável por anos."
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits */}
       <section id="benefits" className="relative py-24 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-[#161B26]/40 backdrop-blur-sm" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }} />
@@ -257,59 +368,37 @@ export default function App() {
           <ScrollReveal direction="up">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
-                Por que <span className="mx-2"></span> <span className="text-[#0088cc]">Telepulse?</span>
+                Por que <span className="mx-2"></span> <span className="text-[#0088cc]">TelePulse?</span>
               </h2>
-              <p className="text-xl text-gray-400">A automação mais completa do mercado, sem gastar um centavo</p>
+              <p className="text-xl text-gray-400">
+                <TypewriterText text="Focamos em soluções que multiplicam seu resultado. Escale sem aumentar equipe" />
+              </p>
             </div>
           </ScrollReveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <ScrollReveal direction="up" delay={0}>
               <BenefitCard 
-                icon={<Zap className="text-[#0088cc]" />} 
-                title="Encaminhamento em Tempo Real 24/7" 
-                description="Monitore vários canais/grupos e distribua automaticamente para onde quiser."
+                icon={<Rocket className="text-[#0088cc]" />} 
+                title="Setup em 1 Minuto" 
+                description="Interface intuitiva e comandos guiados pelo Telegram. Você não precisa ser técnico para começar."
                 color="rgba(0, 136, 204, 0.1)"
               />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={150}>
               <BenefitCard 
-                icon={<Copy className="text-[#2ECC71]" />} 
-                title="Clone de Histórico Completo" 
-                description="Copie todas as mensagens antigas já postadas. Perfeito para backup ou migração."
+                icon={<Activity className="text-[#2ECC71]" />} 
+                title="Estabilidade Comprovada" 
+                description="Engine otimizada para lidar com fluxos constantes de grandes volumes de mensagens sem pular nada."
                 color="rgba(46, 204, 113, 0.1)"
               />
             </ScrollReveal>
             <ScrollReveal direction="up" delay={300}>
               <BenefitCard 
-                icon={<Edit3 className="text-[#FF6B6B]" />} 
-                title="Substitua Textos e Links" 
-                description="Troque parte do texto, o texto todo ou apenas os links. Personalize cada mensagem."
+                icon={<ListChecks className="text-[#FF6B6B]" />} 
+                title="Filtros Inteligentes" 
+                description="Limpe o conteúdo original removendo links, nomes ou arquivos indesejados automaticamente."
                 color="rgba(255, 107, 107, 0.1)"
-              />
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={0}>
-              <BenefitCard 
-                icon={<Smile className="text-[#0066CC]" />} 
-                title="Emojis Premium Preservados" 
-                description="Substituições compatíveis com emojis exclusivos. Formatação e álbuns intactos."
-                color="rgba(0, 102, 204, 0.1)"
-              />
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={150}>
-              <BenefitCard 
-                icon={<CheckCircle className="text-[#0088cc]" />} 
-                title="Canais e Grupos" 
-                description="Funciona tanto com canais quanto grupos, públicos ou privados."
-                color="rgba(0, 136, 204, 0.1)"
-              />
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={300}>
-              <BenefitCard 
-                icon={<Shield className="text-[#D4AF37]" />} 
-                title="Zero Reais. Zero Limites." 
-                description="Tarefas ilimitadas, canais e grupos ilimitados. Use sem custo."
-                color="rgba(212, 175, 55, 0.1)"
               />
             </ScrollReveal>
           </div>
@@ -328,68 +417,21 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 max-w-5xl mx-auto">
             <ScrollReveal direction="left" delay={0}>
-              <Step number="1" title="Abra o Bot" description="Acesse @encaminhadorabot no Telegram" />
+              <Step number="1" title="Inicie o Bot" description="Acesse @encaminhadorabot no Telegram" />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={150}>
-              <Step number="2" title="Conecte sua Conta" description="Conecte sua conta Telegram ao bot" />
+              <Step number="2" title="Conecte-se" description="Faça o login seguro usando a API oficial do Telegram" />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={300}>
-              <Step number="3" title="Conecte sua Conta" description="Conecte sua conta Telegram ao bot" />
+              <Step number="3" title="Selecione os Alvos" description="Defina as fontes de conteúdo e os seus Canais e Grupos de destino" />
             </ScrollReveal>
             <ScrollReveal direction="left" delay={450}>
-              <Step number="4" title="Deixe a Mágica Acontecer" description="Aperte 'Iniciar' e relaxe" />
+              <Step number="4" title="Automatize" description="Aperte 'Iniciar' e veja a mágica acontecer sozinha" />
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Modes */}
-      <section className="relative py-24 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-[#161B26]/40 backdrop-blur-sm" style={{ maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)', WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)' }} />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <ScrollReveal direction="up">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Dois Modos de Automação</h2>
-              <p className="text-xl text-gray-400">Encaminhe novas mensagens ou clone histórico completo</p>
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal direction="up" delay={300} duration={800}>
-            <div className="max-w-5xl mx-auto bg-[#0A0E14]/40 backdrop-blur-2xl border border-[#0088cc]/30 rounded-[40px] p-8 md:p-16 shadow-[0_0_30px_rgba(0,136,204,0.1)] relative overflow-hidden">
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#0088cc]/10 blur-[80px] rounded-full" />
-              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full" />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
-                <div className="text-center">
-                  <div className="text-6xl mb-6">⚡</div>
-                  <h3 className="text-2xl font-bold mb-4 text-[#0088cc]">Encaminhamento</h3>
-                  <p className="text-gray-400 leading-relaxed mb-6">
-                    Monitore canais/grupos e encaminhe automaticamente <strong>mensagens novas</strong> conforme são postadas.
-                  </p>
-                  <div className="bg-[#0088cc]/10 rounded-2xl p-4 text-sm text-gray-400 leading-loose">
-                    ✓ 1 → Vários destinos<br />✓ Vários → 1 destino<br />✓ Canais E grupos
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-6xl mb-6">📋</div>
-                  <h3 className="text-2xl font-bold mb-4 text-[#2ECC71]">Clone</h3>
-                  <p className="text-gray-400 leading-relaxed mb-6">
-                    Clona <strong>todo o histórico</strong> de mensagens e mídias antigas já postadas.
-                  </p>
-                  <div className="bg-[#2ECC71]/10 rounded-2xl p-4 text-sm text-gray-400 leading-loose">
-                    ✓ Somente 1 → 1<br />✓ Copia tudo do passado<br />✓ Canais E grupos
-                  </div>
-                </div>
-              </div>
-              <div className="mt-12 pt-12 border-t border-white/10 text-center">
-                <p className="text-lg text-gray-400 leading-relaxed">
-                  <strong className="text-[#0088cc]">Em ambos os modos:</strong> Substitua textos, links ou partes específicas automaticamente em cada mensagem. Tudo compatível com emojis premium e álbuns de mídia!
-                </p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
 
       {/* FAQ */}
       <section id="faq" className="py-24 px-4">
@@ -402,11 +444,11 @@ export default function App() {
           </ScrollReveal>
 
           <div className="space-y-6">
-            <ScrollReveal direction="up" delay={0}><FAQItem question="É realmente gratuito?" answer="Sim! O Telepulse é 100% gratuito no momento, sem limites de uso." /></ScrollReveal>
-            <ScrollReveal direction="up" delay={150}><FAQItem question="Preciso saber programar?" answer="Zero. Se você usa Telegram, você consegue usar o Telepulse." /></ScrollReveal>
-            <ScrollReveal direction="up" delay={300}><FAQItem question="Funciona com canais privados?" answer="Sim, desde que você seja administrador ou membro." /></ScrollReveal>
-            <ScrollReveal direction="up" delay={450}><FAQItem question="Perde a qualidade das imagens/vídeos?" answer="Nunca. Tudo é copiado com qualidade 100% original." /></ScrollReveal>
-            <ScrollReveal direction="up" delay={600}><FAQItem question="E se o canal usar emojis premium?" answer="Funciona perfeitamente. Emojis exclusivos são preservados." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={0}><FAQItem question="Como posso testar?" answer="Oferecemos acesso total gratuito para que você configure seus primeiros fluxos e valide sua operação." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={150}><FAQItem question="Preciso saber programar?" answer="Zero! Se você usa Telegram, você consegue usar o TelePulse." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={300}><FAQItem question="Funciona com Canais e Grupos privados?" answer="Sim, desde que você seja administrador ou membro." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={450}><FAQItem question="Perde a qualidade das imagens/vídeos?" answer="Nunca! Tudo é copiado com qualidade 100% original." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={600}><FAQItem question="E se os Canais ou Grupos usarem emojis premium?" answer="Funcionam perfeitamente, emojis premium são preservados." /></ScrollReveal>
           </div>
         </div>
       </section>
@@ -419,7 +461,7 @@ export default function App() {
             <h2 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Pronto para Escalar sua Operação?</h2>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={150}>
-            <p className="text-xl text-gray-400 mb-12">Junte-se a centenas de administradores que já automatizaram seus fluxos de trabalho com o Telepulse</p>
+            <p className="text-xl text-gray-400 mb-12">Junte-se a centenas de administradores que já automatizaram seus fluxos de trabalho com o TelePulse</p>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={350} duration={800}>
             <button 
@@ -434,7 +476,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="py-12 px-4 border-t border-white/10 text-center">
-        <p className="text-gray-500 text-sm">&copy; 2026 Telepulse. Todos os direitos reservados.</p>
+        <p className="text-gray-500 text-sm">&copy; 2026 TelePulse. Todos os direitos reservados.</p>
       </footer>
 
     </div>
@@ -470,6 +512,18 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
     <div className="bg-[#1A1F2E] border border-white/5 rounded-2xl p-8 hover:border-[#0088cc]/30 transition-all">
       <div className="font-bold text-lg mb-3 text-[#0088cc]">{question}</div>
       <div className="text-gray-400 leading-relaxed">{answer}</div>
+    </div>
+  );
+}
+
+function FeatureDetailCard({ icon, title, description, highlight }: { icon: React.ReactNode, title: string, description: string, highlight?: boolean }) {
+  return (
+    <div className={`group relative bg-[#1A1F2E]/60 border ${highlight ? 'border-[#0088cc]/40 shadow-[0_0_20px_rgba(0,136,204,0.15)]' : 'border-white/5'} rounded-2xl p-6 transition-all hover:border-[#0088cc]/30 hover:-translate-y-1`}>
+      <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+        {icon}
+      </div>
+      <h4 className="text-xl font-bold mb-3 group-hover:text-[#0088cc] transition-colors">{title}</h4>
+      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
     </div>
   );
 }

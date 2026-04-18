@@ -1,6 +1,6 @@
-# Telepulse
+# TelePulse
 
-**Telepulse** is a complete Telegram automation tool designed for real-time message forwarding and full history cloning. It's built to be 100% free, unlimited, and easy to use for any Telegram administrator.
+**TelePulse** is a complete Telegram automation tool designed for real-time message forwarding and full history cloning. It's built to be 100% free, unlimited, and easy to use for any Telegram administrator.
 
 ## 🚀 Key Features
 
@@ -16,7 +16,7 @@
 1. **Access the Bot:** Open [@encaminhadorabot](https://t.me/encaminhadorabot) on Telegram.
 2. **Connect Your Account:** Follow the instructions to link your Telegram account securely.
 3. **Configure Tasks:** Set up your forwarding or cloning tasks through the bot or the dashboard.
-4. **Start Automating:** Hit "Start" and let Telepulse handle the rest.
+4. **Start Automating:** Hit "Start" and let TelePulse handle the rest.
 
 ## 💻 Tech Stack
 
@@ -26,4 +26,4 @@
 
 ## 📄 License
 
-© 2026 Telepulse. All rights reserved.
+© 2026 TelePulse. All rights reserved.
