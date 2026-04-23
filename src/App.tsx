@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity } from "lucide-react";
+import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity, MessageSquare, Bell, UserCheck, AlertTriangle, Check, TrendingUp, Newspaper, Heart, Globe, Palette } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
 
@@ -29,7 +29,7 @@ export default function App() {
     "Transforme conteúdos e troque links automaticamente em tempo real.",
     "Copie sinais, ofertas ou conteúdos entre Canais e Grupos com perfeição.",
     "Gerencie dezenas de Canais e Grupos sem precisar de uma equipe.",
-    "A automação definitiva para escalar sua operação no Telegram."
+    "Monitore, filtre, transforme e encaminhe mensagens automaticamente com seus próprios fluxos. Nunca mais perca o que é importante."
   ];
 
   useEffect(() => {
@@ -114,6 +114,7 @@ export default function App() {
           
           <div className="hidden md:flex items-center gap-8">
             <a href="#benefits" className="text-gray-400 hover:text-white transition-colors font-medium">Benefícios</a>
+            <a href="#use-cases" className="text-gray-400 hover:text-white transition-colors font-medium">Casos de Uso</a>
             <a href="#how-it-works" className="text-gray-400 hover:text-white transition-colors font-medium">Como Funciona</a>
             <a href="#faq" className="text-gray-400 hover:text-white transition-colors font-medium">FAQ</a>
             <button 
@@ -133,6 +134,7 @@ export default function App() {
         {isMenuOpen && (
           <div className="md:hidden bg-[#161B26] border-b border-white/5 p-4 space-y-4">
             <a href="#benefits" className="block text-gray-400 p-2" onClick={() => setIsMenuOpen(false)}>Benefícios</a>
+            <a href="#use-cases" className="block text-gray-400 p-2" onClick={() => setIsMenuOpen(false)}>Casos de Uso</a>
             <a href="#how-it-works" className="block text-gray-400 p-2" onClick={() => setIsMenuOpen(false)}>Como Funciona</a>
             <a href="#faq" className="block text-gray-400 p-2" onClick={() => setIsMenuOpen(false)}>FAQ</a>
             <button 
@@ -251,6 +253,73 @@ export default function App() {
         </div>
       </section>
 
+      {/* Problem vs Solution */}
+      <section className="py-24 px-4 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+            
+            {/* The Problem */}
+            <ScrollReveal direction="left">
+              <div className="relative group bg-[#1A1F2E]/40 backdrop-blur-sm border border-red-500/10 rounded-[40px] p-10 h-full transition-all hover:bg-[#1A1F2E]/60 hover:border-red-500/20">
+                <div className="absolute -top-6 -left-2">
+                  <div className="w-14 h-14 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center text-red-500 shadow-xl shadow-red-500/10">
+                    <AlertTriangle size={28} />
+                  </div>
+                </div>
+                
+                <h3 className="text-3xl font-bold mb-8 text-white tracking-tight mt-4">O que você enfrenta hoje</h3>
+                
+                <ul className="space-y-6">
+                  {[
+                    "Você fica preso ao encaminhamento manual padrão",
+                    "É impossível trocar links das mensagens, limpar nomes e substituir textos automaticamente",
+                    "Você não consegue adicionar botões clicáveis de venda nas postagens que recebe",
+                    "Perda de tempo total tentando filtrar o que presta de forma manual e lenta"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-4">
+                      <div className="mt-1 w-6 h-6 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                        <X size={14} className="text-red-500" />
+                      </div>
+                      <p className="text-gray-400 leading-relaxed font-medium">{item}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ScrollReveal>
+
+            {/* The Solution */}
+            <ScrollReveal direction="right">
+              <div className="relative group bg-[#0088cc]/5 backdrop-blur-sm border border-[#0088cc]/20 rounded-[40px] p-10 h-full transition-all hover:bg-[#0088cc]/10 hover:border-[#0088cc]/30 shadow-2xl shadow-[#0088cc]/5">
+                <div className="absolute -top-6 -left-2">
+                  <div className="w-14 h-14 bg-[#0088cc]/20 border border-[#0088cc]/30 rounded-2xl flex items-center justify-center text-[#0088cc] shadow-xl shadow-[#0088cc]/10">
+                    <CheckCircle size={28} />
+                  </div>
+                </div>
+                
+                <h3 className="text-3xl font-bold mb-8 text-white tracking-tight mt-4">Sua nova realidade</h3>
+                
+                <ul className="space-y-6">
+                  {[
+                    "Mande mensagens limpas e profissionais, sem nunca mostrar a fonte original",
+                    "Troque os links das mensagens, substitua palavras específicas ou o texto inteiro por algum da sua escolha",
+                    "Adicione botões de CTA poderosos que levam seu cliente direto para o checkout",
+                    "A inteligência do TelePulse filtra, limpa e entrega tudo mastigado 24h por dia"
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-4">
+                      <div className="mt-1 w-6 h-6 rounded-full bg-[#0088cc]/20 flex items-center justify-center flex-shrink-0">
+                        <Check size={14} className="text-[#0088cc]" />
+                      </div>
+                      <p className="text-gray-200 leading-relaxed font-semibold">{item}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </ScrollReveal>
+
+          </div>
+        </div>
+      </section>
+
       {/* Feature Showcase - The "Meat" of the Bot */}
       <section className="py-24 px-4 bg-[#0F1419]/50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
@@ -270,23 +339,23 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <FeatureDetailCard 
                 icon={<Repeat className="text-[#0088cc]" />}
-                title="Espelhamento de Canais e Grupos"
-                description="Monitore Canais e Grupos e replique instantaneamente nos seus próprios Canais e Grupos."
+                title="Encaminhamento em Tempo Real"
+                description="O TelePulse vigia os canais pra você e posta tudo na hora nos seus grupos e canais."
               />
               <FeatureDetailCard 
                 icon={<Copy className="text-[#0088cc]" />}
-                title="Clonagem de Conteúdo"
-                description="Copie todas as mensagens e mídias antigas já postadas. Perfeito para backup ou migração."
+                title="Clone tudo de uma vez"
+                description="Copie todas as mensagens antigas instantaneamente. Ideal para quem está começando agora."
               />
               <FeatureDetailCard 
                 icon={<Smile className="text-[#0088cc]" />}
-                title="Emojis Premium Preservados"
-                description="Transformações de texto compatíveis com emojis premium do telegram."
+                title="Emojis Premium de Verdade"
+                description="Seus emojis continuam funcionando perfeitamente, inclusive os exclusivos do Premium."
               />
               <FeatureDetailCard 
                 icon={<Layout className="text-[#0088cc]" />}
-                title="Organização de Mídia"
-                description="Fotos e vídeos agrupados permanecem juntos, favorecendo uma experiência visual agradável para seus leads."
+                title="Álbuns Sempre Organizados"
+                description="Fotos e vídeos que chegam juntos continuam agrupados, sem bagunça visual."
               />
             </div>
           </div>
@@ -301,34 +370,34 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <FeatureDetailCard 
                 icon={<Settings className="text-[#2ECC71]" />}
-                title="Transformação de Textos"
-                description="Remova / Substitua todos os links de uma só vez, substitua o conteúdo inteiro da mensagem pela sua própria copy, e muito mais..."
+                title="Sua Copy, Seus Links"
+                description="Troque links e textos da fonte pelos seus automaticamente. O post chega com a sua marca."
                 highlight
               />
               <FeatureDetailCard 
                 icon={<MousePointer2 className="text-[#2ECC71]" />}
-                title="Botões Personalizados"
-                description="Adicione botões clicáveis com seus próprios links em suas mensagens, tudo 100% personalizável."
+                title="Botões que Vendem"
+                description="Adicione botões com seus próprios links em qualquer mensagem de forma simples."
               />
               <FeatureDetailCard 
                 icon={<Send className="text-[#2ECC71]" />}
-                title="Mensagens Complementares"
-                description="Envie uma mensagem automática logo abaixo da mensagem encaminhada com direito a botões clicáveis e um texto de sua escolha."
+                title="Mensagens Extras"
+                description="Mande um botão respondendo a mensagem encaminhada com uma CTA extra."
               />
               <FeatureDetailCard 
                 icon={<Infinity className="text-[#2ECC71]" />}
-                title="Gerenciamento em Massa"
-                description="Rode quantas tarefas quiser ao mesmo tempo. Gerencie grandes Canais e Grupos com facilidade."
+                title="Várias Tarefas ao Meio-Tempo"
+                description="Rode quantas automações quiser de uma só vez, sem limitações ou travamentos."
               />
               <FeatureDetailCard 
                 icon={<Monitor className="text-[#2ECC71]" />}
-                title="Painel Detalhado"
-                description="Acompanhe o progresso de cada automação e saiba exatamente o que está acontecendo."
+                title="Dashboard Intuitivo"
+                description="Saiba exatamente o que o TelePulse está fazendo através de um painel simples e completo."
               />
               <FeatureDetailCard 
                 icon={<Repeat className="text-[#2ECC71]" />}
-                title="Ciclo Infinito"
-                description="Mantenha seus Canais e Grupos sempre ativos reenviando conteúdos de forma programada."
+                title="Fila Recorrente"
+                description="Mantenha seus grupos ativos 24h por dia reenviando conteúdos de forma cíclica."
               />
             </div>
           </div>
@@ -343,18 +412,18 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FeatureDetailCard 
                 icon={<Lock className="text-[#FF6B6B]" />}
-                title="Segurança Máxima"
-                description="Sua conta Telegram é protegida. Usamos métodos seguros para evitar bloqueios de API."
+                title="Sua Conta Blindada"
+                description="Suas contas do Telegram ficam protegidas com métodos que evitam o radar da API."
               />
               <FeatureDetailCard 
                 icon={<Shield className="text-[#FF6B6B]" />}
-                title="Bypass Inteligente"
-                description="Clona até Canais e Grupos que proíbem cópia e encaminhamento."
+                title="Fure qualquer Bloqueio"
+                description="Clonamos até canais e grupos que tentam proibir o encaminhamento de conteúdo."
               />
               <FeatureDetailCard 
                 icon={<Clock className="text-[#FF6B6B]" />}
-                title="Blindagem Anti-Ban"
-                description="Intervalos aleatórios que mimetizam humanos, favorecendo sua conta saudável por anos."
+                title="Cuidado Humanizado"
+                description="O TelePulse age como se fosse você, com intervalos que mantêm sua conta saudável."
               />
             </div>
           </div>
@@ -405,28 +474,128 @@ export default function App() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how-it-works" className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+      {/* Use Cases */}
+      <section id="use-cases" className="py-24 px-4 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
           <ScrollReveal direction="up">
             <div className="text-center max-w-3xl mx-auto mb-16">
-              <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Como Funciona?</h2>
-              <p className="text-xl text-gray-400">4 passos simples para automatizar tudo</p>
+              <h2 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
+                Casos de <span className="text-[#0088cc]">Uso</span>
+              </h2>
+              <p className="text-xl text-gray-400">Como diferentes perfis lucram e automatizam com o TelePulse</p>
             </div>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 max-w-5xl mx-auto">
-            <ScrollReveal direction="left" delay={0}>
-              <Step number="1" title="Inicie o Bot" description="Acesse @encaminhadorabot no Telegram" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <ScrollReveal direction="up" delay={0}>
+              <UseCaseCard 
+                icon={<TrendingUp size={28} className="text-[#2ECC71]" />}
+                title="Sinais de Apostas e Trading"
+                description="Copie entradas de canais VIP de sinais (Blaze, Bet365, Cripto) e envie para o seu próprio canal no mesmo segundo."
+                iconBg="bg-[#2ECC71]/10"
+                examples={[
+                  "Replique sinais de Green instantaneamente",
+                  "Remova links da concorrência e coloque os seus",
+                  "Filtre apenas entradas com alta probabilidade"
+                ]}
+              />
             </ScrollReveal>
-            <ScrollReveal direction="left" delay={150}>
-              <Step number="2" title="Conecte-se" description="Faça o login seguro usando a API oficial do Telegram" />
+            <ScrollReveal direction="up" delay={150}>
+              <UseCaseCard 
+                icon={<Newspaper size={28} className="text-[#0088cc]" />}
+                title="Canais de Ofertas e Cupons"
+                description="Automatize seu canal de promoções. O TelePulse vigia grupos de grandes marcas e posta as ofertas já com seu link de afiliado."
+                iconBg="bg-[#0088cc]/10"
+                examples={[
+                  "Troque links da Amazon/Magalu pelos seus",
+                  "Crie um feed de promoções 24h sem esforço",
+                  "Mande CTAs exclusivas abaixo de cada oferta"
+                ]}
+              />
             </ScrollReveal>
-            <ScrollReveal direction="left" delay={300}>
-              <Step number="3" title="Selecione os Alvos" description="Defina as fontes de conteúdo e os seus Canais e Grupos de destino" />
+            <ScrollReveal direction="up" delay={300}>
+              <UseCaseCard 
+                icon={<Heart size={28} className="text-[#FF6B6B]" />}
+                title="Estratégias de Nicho Hot"
+                description="Automatize seus canais de prévias e grupos VIP. Clone conteúdos de outros canais ou grupos e adicione botões de CTA que convertem visitantes em assinantes."
+                iconBg="bg-[#FF6B6B]/10"
+                examples={[
+                  "Automatizar grupo de prévias 24h",
+                  "Clonar grupos VIPs com perfeição",
+                  "Botões de CTA para aumentar conversão"
+                ]}
+              />
             </ScrollReveal>
-            <ScrollReveal direction="left" delay={450}>
-              <Step number="4" title="Automatize" description="Aperte 'Iniciar' e veja a mágica acontecer sozinha" />
+            <ScrollReveal direction="up" delay={450}>
+              <UseCaseCard 
+                icon={<Palette size={28} className="text-[#A855F7]" />}
+                title="Identidade e Estética"
+                description="Deixe cada postagem com a cara da sua marca. Personalize a cor de botões, use emojis exclusivos e passe mais autoridade para sua audiência."
+                iconBg="bg-[#A855F7]/10"
+                examples={[
+                  "Mudar as cores dos botões de CTA",
+                  "Usar Emojis Premium exclusivos",
+                  "Limpar textos e fontes indesejadas"
+                ]}
+              />
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="py-40 px-4 relative">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <ScrollReveal direction="up">
+            <div className="text-center max-w-3xl mx-auto mb-24">
+              <h2 className="text-5xl md:text-7xl font-extrabold mb-8 tracking-tighter bg-gradient-to-r from-[#4F46E5] via-[#9333EA] to-[#DB2777] bg-clip-text text-transparent">
+                Como Funciona
+              </h2>
+              <p className="text-xl text-gray-400">Começar é simples com nosso processo de quatro etapas</p>
+            </div>
+          </ScrollReveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+            <ScrollReveal direction="up" delay={0}>
+              <Step 
+                number="1" 
+                title="Conecte sua Conta" 
+                description="Conecte sua conta do Telegram com segurança para acessar os canais que deseja monitorar." 
+                icon={<UserCheck />} 
+                iconBgColor="bg-blue-500" 
+                iconColor="text-blue-400"
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={150}>
+              <Step 
+                number="2" 
+                title="Defina seus Fluxos" 
+                description="Crie fluxos personalizados para filtrar, transformar e encaminhar mensagens." 
+                icon={<Settings />} 
+                iconBgColor="bg-purple-500" 
+                iconColor="text-purple-400"
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={300}>
+              <Step 
+                number="3" 
+                title="Processamento 24/7" 
+                description="Nosso monitor funciona continuamente, aplicando seus fluxos a cada mensagem em tempo real." 
+                icon={<MessageSquare />} 
+                iconBgColor="bg-teal-500" 
+                iconColor="text-teal-400"
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={450}>
+              <Step 
+                number="4" 
+                title="Informações Filtradas" 
+                description="Receba apenas as mensagens que importam, formatadas exatamente como você deseja." 
+                icon={<Bell />} 
+                iconBgColor="bg-orange-500" 
+                iconColor="text-orange-400"
+                isLast
+              />
             </ScrollReveal>
           </div>
         </div>
@@ -468,7 +637,7 @@ export default function App() {
             <ScrollReveal direction="up" delay={0}><FAQItem question="Como posso testar?" answer="Oferecemos acesso total gratuito para que você configure seus primeiros fluxos e valide sua operação." /></ScrollReveal>
             <ScrollReveal direction="up" delay={150}><FAQItem question="Preciso saber programar?" answer="Zero! Se você usa Telegram, você consegue usar o TelePulse." /></ScrollReveal>
             <ScrollReveal direction="up" delay={300}><FAQItem question="Funciona com Canais e Grupos privados?" answer="Sim, desde que você seja administrador ou membro." /></ScrollReveal>
-            <ScrollReveal direction="up" delay={450}><FAQItem question="Perde a qualidade das imagens/vídeos?" answer="Nunca! Tudo é copiado com qualidade 100% original." /></ScrollReveal>
+            <ScrollReveal direction="up" delay={450}><FAQItem question="Perde a qualidade das imagens/vídeos?" answer="Nunca! Tudo é encaminhado com qualidade 100% original." /></ScrollReveal>
             <ScrollReveal direction="up" delay={600}><FAQItem question="E se os Canais ou Grupos usarem emojis premium?" answer="Funcionam perfeitamente, emojis premium são preservados." /></ScrollReveal>
           </div>
         </div>
@@ -479,6 +648,30 @@ export default function App() {
         <p className="text-gray-500 text-sm">&copy; 2026 TelePulse. Todos os direitos reservados.</p>
       </footer>
 
+    </div>
+  );
+}
+
+function UseCaseCard({ icon, title, description, examples, iconBg }: { icon: React.ReactNode, title: string, description: string, examples: string[], iconBg: string }) {
+  return (
+    <div className="bg-[#1A1F2E]/60 backdrop-blur-sm border border-white/5 rounded-[40px] p-8 h-full transition-all hover:border-[#0088cc]/30 group">
+      <div className={`w-14 h-14 rounded-2xl ${iconBg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+        {icon}
+      </div>
+      <h3 className="text-2xl font-bold mb-4 text-white">{title}</h3>
+      <p className="text-gray-400 text-sm leading-relaxed mb-8">{description}</p>
+      
+      <div className="space-y-3">
+        <p className="text-[10px] font-bold tracking-widest text-[#0088cc] uppercase">Exemplos:</p>
+        <ul className="space-y-3">
+          {examples.map((ex, i) => (
+            <li key={i} className="flex items-center gap-3 text-sm text-gray-300">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#0088cc]" />
+              {ex}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -495,14 +688,34 @@ function BenefitCard({ icon, title, description, color }: { icon: React.ReactNod
   );
 }
 
-function Step({ number, title, description }: { number: string, title: string, description: string }) {
+function Step({ number, title, description, icon, iconBgColor, iconColor, isLast }: { 
+  number: string, 
+  title: string, 
+  description: string, 
+  icon: React.ReactNode, 
+  iconBgColor: string, 
+  iconColor: string,
+  isLast?: boolean 
+}) {
   return (
-    <div className="text-center relative">
-      <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-[#0088cc] to-[#0088cc]/60 rounded-full flex items-center justify-center text-2xl font-extrabold shadow-xl shadow-[#0088cc]/30">
-        {number}
+    <div className="relative group flex flex-col h-full">
+      <div className="bg-[#1A1F2E]/60 backdrop-blur-sm rounded-[40px] p-10 shadow-2xl border border-white/5 flex flex-col items-center text-center h-full transition-all duration-500 hover:border-[#0088cc]/30 hover:-translate-y-2">
+        <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-8 ${iconBgColor} ${iconColor} bg-opacity-10 backdrop-blur-md border border-white/10`}>
+           {React.cloneElement(icon as React.ReactElement, { size: 36, strokeWidth: 1.5 })}
+        </div>
+        <h3 className="text-xl font-bold mb-4 text-white tracking-tight">{title}</h3>
+        <p className="text-gray-400 text-sm leading-relaxed mb-10 flex-grow">{description}</p>
+        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-sm font-bold text-gray-500 border border-white/5">
+          {number}
+        </div>
       </div>
-      <h3 className="text-xl font-bold mb-3">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{description}</p>
+      {!isLast && (
+         <div className="hidden xl:flex absolute top-1/2 -right-8 transform -translate-y-1/2 z-20 items-center opacity-20">
+            <div className="w-4 h-px bg-white/20" />
+            <ArrowRight className="text-white/40" size={20} strokeWidth={1} />
+            <div className="w-4 h-px bg-white/20" />
+         </div>
+      )}
     </div>
   );
 }
