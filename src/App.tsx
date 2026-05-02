@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity, MessageSquare, Bell, UserCheck, AlertTriangle, Check, TrendingUp, Newspaper, Heart, Globe, Palette } from "lucide-react";
+import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity, MessageSquare, Bell, UserCheck, AlertTriangle, Check, TrendingUp, Newspaper, Heart, Globe, Palette, Coffee } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
 
@@ -29,7 +29,7 @@ export default function App() {
     "Transforme conteúdos e troque links automaticamente em tempo real.",
     "Copie sinais, ofertas ou conteúdos entre Canais e Grupos com perfeição.",
     "Gerencie dezenas de Canais e Grupos sem precisar de uma equipe.",
-    "Monitore, filtre, transforme e encaminhe mensagens automaticamente com seus próprios fluxos. Nunca mais perca o que é importante."
+    "Monitore, filtre, transforme e encaminhe mensagens automaticamente com suas próprias tarefas. Nunca mais perca o que é importante."
   ];
 
   useEffect(() => {
@@ -569,31 +569,31 @@ export default function App() {
             <ScrollReveal direction="up" delay={150}>
               <Step 
                 number="2" 
-                title="Defina seus Fluxos" 
-                description="Crie fluxos personalizados para filtrar, transformar e encaminhar mensagens." 
-                icon={<Settings />} 
-                iconBgColor="bg-purple-500" 
-                iconColor="text-purple-400"
-              />
-            </ScrollReveal>
-            <ScrollReveal direction="up" delay={300}>
-              <Step 
-                number="3" 
                 title="Processamento 24/7" 
-                description="Nosso monitor funciona continuamente, aplicando seus fluxos a cada mensagem em tempo real." 
+                description="Nossa automação funciona continuamente, sua operação roda 24/7 com o PC desligado." 
                 icon={<MessageSquare />} 
                 iconBgColor="bg-teal-500" 
                 iconColor="text-teal-400"
               />
             </ScrollReveal>
+            <ScrollReveal direction="up" delay={300}>
+              <Step 
+                number="3" 
+                title="Defina suas Tarefas" 
+                description="Crie tarefas personalizadas para filtrar, transformar e encaminhar mensagens." 
+                icon={<Settings />} 
+                iconBgColor="bg-purple-500" 
+                iconColor="text-purple-400"
+              />
+            </ScrollReveal>
             <ScrollReveal direction="up" delay={450}>
               <Step 
                 number="4" 
-                title="Informações Filtradas" 
-                description="Receba apenas as mensagens que importam, formatadas exatamente como você deseja." 
-                icon={<Bell />} 
-                iconBgColor="bg-orange-500" 
-                iconColor="text-orange-400"
+                title="Piloto Automático" 
+                description="Depois de configurar tudo, relaxe, sua estrutura já funciona 100% no piloto automático." 
+                icon={<Coffee />} 
+                iconBgColor="bg-green-500" 
+                iconColor="text-green-400"
                 isLast
               />
             </ScrollReveal>
