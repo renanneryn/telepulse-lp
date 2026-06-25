@@ -6,21 +6,10 @@
     { "source": "/admin", "destination": "/admin/", "permanent": false }
   ],
   "rewrites": [
-    {
-      "source": "/admin/api/:path*",
-      "destination": "https://telepulse.discloud.app/admin/api/:path*"
-    },
+    { "source": "/admin/api/:path*", "destination": "/api/proxy" },
     { "source": "/admin/assets/:path*", "destination": "/admin-current/assets/:path*" },
     { "source": "/admin/", "destination": "/admin-current/index.html" },
     { "source": "/admin/:path*", "destination": "/admin-current/index.html" },
     { "source": "/:path*", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/admin/api/:path*",
-      "headers": [
-        { "key": "x-vercel-enable-rewrite-caching", "value": "0" }
-      ]
-    }
   ]
 }
