@@ -2,9 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "vite build",
   "outputDirectory": "dist",
-  "functions": {
-    "server.ts": { "runtime": "@vercel/node@latest" }
-  },
   "redirects": [
     { "source": "/admin", "destination": "/admin/", "permanent": false }
   ],
@@ -13,8 +10,8 @@
       "source": "/admin/api/:path*",
       "destination": "https://telepulse.discloud.app/admin/api/:path*"
     },
-    { "source": "/api/:path*", "destination": "/server.ts" },
     { "source": "/admin/assets/:path*", "destination": "/admin-current/assets/:path*" },
+    { "source": "/admin/", "destination": "/admin-current/index.html" },
     { "source": "/admin/:path*", "destination": "/admin-current/index.html" },
     { "source": "/:path*", "destination": "/index.html" }
   ],
