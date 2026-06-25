@@ -2,7 +2,7 @@
 # Aborta se build falhar para nao pushar dist vazio (que apagaria o painel no Vercel)
 
 $frontendDir = "C:\Users\x\Desktop\Work TP\Telepulse\painel_admin\frontend"
-$dst = "C:\Users\x\Documents\Telepulse\lp\public\admin"
+$dst = "C:\Users\x\Documents\Telepulse\lp\public\admin-current"
 $lpDir = "C:\Users\x\Documents\Telepulse\lp"
 
 # 1. Build
