@@ -40,6 +40,7 @@ import {
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
 import VideoGenerator from "./components/VideoGenerator";
+import { COPY, LanguageSwitch, translateDocument, type Lang } from "./i18n";
 
 function TypewriterText({ text }: { text: string }) {
   const [displayText, setDisplayText] = useState("");
@@ -55,7 +56,7 @@ function TypewriterText({ text }: { text: string }) {
   }, [text]);
 
   return (
-    <span>
+    <span data-i18n-ignore="true">
       {displayText}
       <span className="animate-pulse">|</span>
     </span>
@@ -379,21 +380,39 @@ const NeonStep4 = () => (
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("landing");
+  const [lang, setLang] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "pt";
+    return window.localStorage.getItem("telepulse_lang") === "en" ? "en" : "pt";
+  });
   const [phraseIndex, setPhraseIndex] = useState(0);
 
-  const phrases = [
-    "Transforme conteúdos e troque links automaticamente em tempo real.",
-    "Copie sinais, ofertas ou conteúdos entre Canais e Grupos com perfeição.",
-    "Gerencie dezenas de Canais e Grupos sem precisar de uma equipe.",
-    "Monitore, filtre, transforme e encaminhe mensagens automaticamente com suas próprias tarefas. Nunca mais perca o que é importante.",
-  ];
+  const c = COPY[lang];
+  const phrases = c.phrases;
 
   useEffect(() => {
     const timer = setInterval(() => {
       setPhraseIndex((prev) => (prev + 1) % phrases.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [phrases.length]);
+
+  useEffect(() => {
+    document.documentElement.lang = lang === "en" ? "en" : "pt-BR";
+    document.title = c.metaTitle;
+    window.localStorage.setItem("telepulse_lang", lang);
+
+    const run = () => translateDocument(lang);
+    const timeout = window.setTimeout(run, 0);
+    const root = document.getElementById("root");
+    const observer = root ? new MutationObserver(() => window.requestAnimationFrame(run)) : null;
+    if (root && observer) {
+      observer.observe(root, { childList: true, subtree: true, characterData: true });
+    }
+    return () => {
+      window.clearTimeout(timeout);
+      observer?.disconnect();
+    };
+  }, [lang, c.metaTitle, activeTab, phraseIndex, isMenuOpen]);
 
   if (activeTab === "dashboard") {
     return (
@@ -406,19 +425,21 @@ export default function App() {
               </div>
               <span className="font-extrabold text-xl">TelePulse</span>
             </div>
-            <button
-              onClick={() => setActiveTab("landing")}
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Voltar para Home
-            </button>
+            <div className="flex items-center gap-4">
+              <LanguageSwitch lang={lang} onChange={setLang} />
+              <button
+                onClick={() => setActiveTab("landing")}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                {c.backHome}
+              </button>
+            </div>
           </div>
 
           <div className="bg-[#1A1F2E] border border-white/5 rounded-3xl p-8 shadow-2xl">
-            <h2 className="text-3xl font-bold mb-6">Conectar Telegram</h2>
+            <h2 className="text-3xl font-bold mb-6">{c.dashboardTitle}</h2>
             <p className="text-gray-400 mb-8">
-              Para começar a automatizar, precisamos conectar sua conta. Siga as
-              instruções no nosso bot oficial.
+              {c.dashboardIntro}
             </p>
 
             <div className="space-y-6">
@@ -427,11 +448,10 @@ export default function App() {
                   <span className="w-8 h-8 bg-[#0088cc] rounded-full flex items-center justify-center text-sm">
                     1
                   </span>
-                  Acesse o Bot
+                  {c.dashboardStep1}
                 </h3>
                 <p className="text-gray-400 mb-4">
-                  Clique no botão abaixo para abrir o bot no Telegram e obter
-                  seu código de acesso.
+                  {c.dashboardStep1Text}
                 </p>
                 <a
                   href="https://t.me/tele_pulsebot?start=lp"
@@ -439,7 +459,7 @@ export default function App() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] px-6 py-3 rounded-xl font-bold transition-all"
                 >
-                  Abrir @tele_pulsebot <ArrowRight size={18} />
+                  {c.openBot} <ArrowRight size={18} />
                 </a>
               </div>
 
@@ -448,11 +468,10 @@ export default function App() {
                   <span className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-sm">
                     2
                   </span>
-                  Configurar Tarefas
+                  {c.dashboardStep2}
                 </h3>
                 <p className="text-gray-400">
-                  Após conectar, você poderá criar tarefas de encaminhamento e
-                  clonagem diretamente por aqui ou pelo bot.
+                  {c.dashboardStep2Text}
                 </p>
               </div>
             </div>
@@ -484,32 +503,33 @@ export default function App() {
               href="#benefits"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              Benefícios
+              {c.navBenefits}
             </a>
             <a
               href="#use-cases"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              Casos de Uso
+              {c.navUseCases}
             </a>
             <a
               href="#how-it-works"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              Como Funciona
+              {c.navHowItWorks}
             </a>
             <a
               href="#faq"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              FAQ
+              {c.navFaq}
             </a>
             <button
               onClick={() => setActiveTab("dashboard")}
               className="bg-[#0088cc] hover:bg-[#0077b5] text-white px-6 py-3 rounded-xl font-bold transition-all hover:-translate-y-0.5 shadow-lg shadow-[#0088cc]/20"
             >
-              Começar Agora
+              {c.startNow}
             </button>
+            <LanguageSwitch lang={lang} onChange={setLang} />
           </div>
 
           <button
@@ -528,28 +548,28 @@ export default function App() {
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Benefícios
+              {c.navBenefits}
             </a>
             <a
               href="#use-cases"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Casos de Uso
+              {c.navUseCases}
             </a>
             <a
               href="#how-it-works"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Como Funciona
+              {c.navHowItWorks}
             </a>
             <a
               href="#faq"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              FAQ
+              {c.navFaq}
             </a>
             <button
               onClick={() => {
@@ -558,8 +578,11 @@ export default function App() {
               }}
               className="w-full bg-[#0088cc] text-white py-3 rounded-xl font-bold"
             >
-              Começar Agora
+              {c.startNow}
             </button>
+            <div className="flex justify-center pt-2">
+              <LanguageSwitch lang={lang} onChange={setLang} />
+            </div>
           </div>
         )}
       </header>
@@ -624,7 +647,7 @@ export default function App() {
               animate="visible"
               className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
             >
-              {Array.from("Escala ").map((char, index) => (
+              {Array.from(c.heroLead).map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -637,7 +660,7 @@ export default function App() {
                 </motion.span>
               ))}
               <span className="gradient-text">
-                {Array.from("Total").map((char, index) => (
+                {Array.from(c.heroAccent).map((char, index) => (
                   <motion.span
                     key={index}
                     variants={{
@@ -651,7 +674,7 @@ export default function App() {
                 ))}
               </span>
               <br />
-              {Array.from("Automatize Canais e Grupos").map((char, index) => (
+              {Array.from(c.heroSecond).map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -696,7 +719,7 @@ export default function App() {
                 className="group bg-gradient-to-r from-[#0088cc] to-[#00aaff] text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(0,136,204,0.4)] hover:shadow-[0_0_40px_rgba(0,136,204,0.6)] flex items-center gap-3 relative overflow-hidden w-full sm:w-auto justify-center"
               >
                 <div className="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full group-hover:animate-shine" />
-                Começar Agora de Graça{" "}
+                {c.startFree}{" "}
                 <ArrowRight
                   size={22}
                   className="group-hover:translate-x-1 transition-transform"
@@ -714,7 +737,7 @@ export default function App() {
                   size={22}
                   className="group-hover:rotate-12 transition-transform"
                 />
-                Entrar em Contato
+                {c.contact}
               </motion.a>
             </motion.div>
           </ScrollReveal>
@@ -1133,7 +1156,7 @@ export default function App() {
               onClick={() => setActiveTab("dashboard")}
               className="bg-[#0088cc] hover:bg-[#0077b5] text-white px-12 py-6 rounded-2xl font-bold text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-[#0088cc]/30 flex items-center gap-2 mx-auto"
             >
-              Começar Agora <ArrowRight size={24} />
+              {c.startNow} <ArrowRight size={24} />
             </button>
           </ScrollReveal>
         </div>
