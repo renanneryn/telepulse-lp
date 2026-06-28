@@ -261,7 +261,7 @@ export default function App() {
       </header>
 
       {/* Hero */}
-      <section className="relative pt-32 pb-24 px-4 text-center overflow-hidden">
+      <section className="relative pt-16 md:pt-32 pb-20 md:pb-24 px-4 text-center overflow-hidden">
         <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-radial-gradient from-[#0088cc]/10 to-transparent blur-[80px] animate-float" />
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-radial-gradient from-[#161B26]/50 to-transparent blur-[80px] animate-float-reverse" />
         
@@ -270,10 +270,20 @@ export default function App() {
             <motion.div 
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="w-40 h-40 mx-auto mb-8 relative"
+              className="w-40 h-40 mx-auto mb-8 relative flex items-center justify-center"
             >
-              <div className="absolute inset-0 bg-[#a855f7]/20 blur-[40px] rounded-full" />
-              <div className="absolute inset-0 bg-[#00efff]/10 blur-[30px] rounded-full translate-x-4 -translate-y-4" />
+              {/* Vortex Ambient Glow */}
+              <div className="absolute inset-0 bg-[#00efff]/20 blur-[40px] rounded-full" />
+              
+              {/* Vortex Swirls */}
+              <div className="absolute inset-[-20px] rounded-full animate-vortex" style={{ background: 'conic-gradient(from 0deg, transparent 0%, rgba(168,85,247,0.3) 25%, transparent 50%, rgba(0,239,255,0.3) 75%, transparent 100%)', filter: 'blur(8px)', animationDelay: '0s' }} />
+              <div className="absolute inset-[-40px] rounded-full animate-vortex" style={{ background: 'conic-gradient(from 90deg, transparent 0%, rgba(0,239,255,0.2) 25%, transparent 50%, rgba(168,85,247,0.2) 75%, transparent 100%)', filter: 'blur(12px)', animationDelay: '1.5s', animationDuration: '4s' }} />
+              <div className="absolute inset-[-60px] rounded-full animate-vortex" style={{ background: 'conic-gradient(from 180deg, transparent 0%, rgba(168,85,247,0.1) 25%, transparent 50%, rgba(0,239,255,0.1) 75%, transparent 100%)', filter: 'blur(16px)', animationDelay: '3s', animationDuration: '5s' }} />
+              
+              {/* Event Horizon (Inner Black Hole) */}
+              <div className="absolute inset-[3px] bg-[#0F1419] rounded-full shadow-[inset_0_0_20px_rgba(0,0,0,1)]" />
+              
+              {/* Icon */}
               <NeonLogo className="w-full h-full relative z-10 scale-125" />
             </motion.div>
           </ScrollReveal>
@@ -327,7 +337,7 @@ export default function App() {
           </ScrollReveal>
           
           <ScrollReveal direction="left" delay={300}>
-            <div className="h-20 md:h-12 flex items-center justify-center mb-12">
+            <div className="min-h-[140px] md:min-h-[80px] flex items-start justify-center mb-6">
               <AnimatePresence mode="wait">
                 <motion.p 
                   key={phraseIndex}
@@ -347,7 +357,7 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-4"
+              className="flex flex-col sm:flex-row justify-center items-center gap-6"
             >
               <motion.button 
                 whileHover={{ scale: 1.05 }}
@@ -395,7 +405,7 @@ export default function App() {
                     "Você fica preso ao encaminhamento manual padrão",
                     "É impossível trocar links das mensagens, limpar nomes e substituir textos automaticamente",
                     "Você não consegue adicionar botões clicáveis de venda nas postagens que recebe",
-                    "Perda de tempo total tentando filtrar o que presta de forma manual e lenta"
+                    "Perde de tempo total organizando canais e grupos de forma manual"
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
                       <div className="mt-1 w-6 h-6 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
@@ -424,7 +434,7 @@ export default function App() {
                     "Mande mensagens limpas e profissionais, sem nunca mostrar a fonte original",
                     "Troque os links das mensagens, substitua palavras específicas ou o texto inteiro por algum da sua escolha",
                     "Adicione botões de CTA poderosos que levam seu cliente direto para o checkout",
-                    "A inteligência do TelePulse filtra, limpa e entrega tudo mastigado 24h por dia"
+                    "A inteligência do TelePulse automatiza, monitora e mantém seus canais com conteúdos atualizados até com seu PC OFFLINE."
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4">
                       <div className="mt-1 w-6 h-6 rounded-full bg-[#0088cc]/20 flex items-center justify-center flex-shrink-0">
