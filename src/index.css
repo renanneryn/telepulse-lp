@@ -64,12 +64,20 @@ body {
   50% { transform: translate(30px, -30px); }
 }
 
+@keyframes shine {
+  100% { transform: translateX(200%); }
+}
+
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
 
 .animate-float-reverse {
   animation: float 10s ease-in-out infinite reverse;
+}
+
+.animate-shine {
+  animation: shine 2s ease-in-out infinite;
 }
 
 .reveal {

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity, MessageSquare, Bell, UserCheck, AlertTriangle, Check, TrendingUp, Newspaper, Heart, Globe, Palette, Coffee } from "lucide-react";
+import { ArrowRight, CheckCircle, Zap, Copy, Edit3, Smile, Shield, HelpCircle, Menu, X, Rocket, Send, Settings, Infinity, Repeat, Monitor, Layout, MousePointer2, Clock, Lock, ListChecks, Activity, MessageSquare, Bell, UserCheck, AlertTriangle, Check, TrendingUp, Newspaper, Heart, Globe, Palette, Coffee, Package, Smartphone } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
+import VideoGenerator from "./components/VideoGenerator";
 
 function TypewriterText({ text }: { text: string }) {
   const [displayText, setDisplayText] = useState("");
@@ -19,6 +20,116 @@ function TypewriterText({ text }: { text: string }) {
 
   return <span>{displayText}<span className="animate-pulse">|</span></span>;
 }
+
+const NeonLogo = ({ className = "w-full h-full" }: { className?: string }) => (
+  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="neon-purple" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="2.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="neon-cyan" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="2.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <filter id="neon-white" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+    
+    {/* Purple Speech Bubble */}
+    <path 
+      d="M 32 35 L 68 35 A 12 12 0 0 1 80 47 L 80 63 A 12 12 0 0 1 68 75 L 35 75 L 22 88 L 26 71 A 12 12 0 0 1 20 63 L 20 47 A 12 12 0 0 1 32 35 Z"
+      stroke="#b517ff" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round"
+      filter="url(#neon-purple)"
+    />
+    <path 
+      d="M 32 35 L 68 35 A 12 12 0 0 1 80 47 L 80 63 A 12 12 0 0 1 68 75 L 35 75 L 22 88 L 26 71 A 12 12 0 0 1 20 63 L 20 47 A 12 12 0 0 1 32 35 Z"
+      stroke="#ffffff" strokeWidth="1" strokeLinejoin="round" strokeLinecap="round"
+      opacity="0.8"
+    />
+
+    {/* Angle Bracket (Cyan) */}
+    <g filter="url(#neon-cyan)">
+      <path d="M 68 63 L 73 68 L 68 73" stroke="#00efff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+    <path d="M 68 63 L 73 68 L 68 73" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+
+    {/* Paper Airplane (White) */}
+    <g filter="url(#neon-white)">
+      <path d="M 43 63 L 66 53 L 57 72 L 52 64 Z" fill="#ffffff" stroke="#ffffff" strokeWidth="1" strokeLinejoin="round" />
+      <path d="M 52 64 L 50 71 L 55 67 Z" fill="#ffffff" />
+    </g>
+
+    {/* Swoosh (Cyan) - Back part */}
+    <path 
+      d="M 46 39 C 32 32, 16 38, 18 50" 
+      stroke="#00efff" strokeWidth="2.5" strokeLinecap="round"
+      filter="url(#neon-cyan)"
+    />
+    <path 
+      d="M 46 39 C 32 32, 16 38, 18 50" 
+      stroke="#ffffff" strokeWidth="1" strokeLinecap="round"
+    />
+
+    {/* Rocket (Cyan) */}
+    <g transform="translate(56, 32) rotate(30)">
+      {/* Rocket Glow */}
+      <g filter="url(#neon-cyan)">
+        {/* Left Fin */}
+        <path d="M -7 5 L -15 18 L -6 13 Z" fill="#0F1419" stroke="#00efff" strokeWidth="2.5" strokeLinejoin="round"/>
+        {/* Right Fin */}
+        <path d="M 7 5 L 15 18 L 6 13 Z" fill="#0F1419" stroke="#00efff" strokeWidth="2.5" strokeLinejoin="round"/>
+        {/* Body */}
+        <path d="M -7 13 C -10 -5, -4 -18, 0 -24 C 4 -18, 10 -5, 7 13 C 3 16, -3 16, -7 13 Z" fill="#0F1419" stroke="#00efff" strokeWidth="2.5" strokeLinejoin="round"/>
+        {/* Window */}
+        <circle cx="0" cy="-3" r="3.5" fill="#0F1419" stroke="#00efff" strokeWidth="2.5"/>
+        {/* Nozzle */}
+        <path d="M -4 14.5 L -5 18 L 5 18 L 4 14.5 Z" fill="#0F1419" stroke="#00efff" strokeWidth="2.5" strokeLinejoin="round"/>
+      </g>
+      
+      {/* Rocket Core */}
+      <g>
+        <path d="M -7 5 L -15 18 L -6 13 Z" fill="none" stroke="#ffffff" strokeWidth="1" strokeLinejoin="round"/>
+        <path d="M 7 5 L 15 18 L 6 13 Z" fill="none" stroke="#ffffff" strokeWidth="1" strokeLinejoin="round"/>
+        <path d="M -7 13 C -10 -5, -4 -18, 0 -24 C 4 -18, 10 -5, 7 13 C 3 16, -3 16, -7 13 Z" fill="none" stroke="#ffffff" strokeWidth="1" strokeLinejoin="round"/>
+        <circle cx="0" cy="-3" r="3.5" fill="none" stroke="#ffffff" strokeWidth="1"/>
+        <path d="M -4 14.5 L -5 18 L 5 18 L 4 14.5 Z" fill="none" stroke="#ffffff" strokeWidth="1" strokeLinejoin="round"/>
+      </g>
+    </g>
+
+    {/* Swoosh (Cyan) - Front part */}
+    <path 
+      d="M 18 50 C 20 62, 38 64, 49 53" 
+      stroke="#00efff" strokeWidth="2.5" strokeLinecap="round"
+      filter="url(#neon-cyan)"
+    />
+    <path 
+      d="M 18 50 C 20 62, 38 64, 49 53" 
+      stroke="#ffffff" strokeWidth="1" strokeLinecap="round"
+    />
+
+    {/* Double Chevron (Cyan) */}
+    <g transform="translate(34, 26) rotate(-20)">
+      <g filter="url(#neon-cyan)">
+        <path d="M -5 -5 L 1 1 L -5 7" stroke="#00efff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+        <path d="M 3 -5 L 9 1 L 3 7" stroke="#00efff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      </g>
+      <path d="M -5 -5 L 1 1 L -5 7" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      <path d="M 3 -5 L 9 1 L 3 7" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </g>
+  </svg>
+);
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,8 +156,8 @@ export default function App() {
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#0F1419] border border-[#0088cc]/50 rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(0,136,204,0.3)]">
-                <Rocket size={24} className="text-[#0088cc]" />
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden border border-white/5 bg-[#101016]">
+                <NeonLogo />
               </div>
               <span className="font-extrabold text-xl">TelePulse</span>
             </div>
@@ -94,6 +205,8 @@ export default function App() {
               </div>
             </div>
           </div>
+          
+          <VideoGenerator />
         </div>
       </div>
     );
@@ -106,8 +219,8 @@ export default function App() {
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#0F1419]/80 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-[#0F1419] border border-[#0088cc]/50 rounded-xl flex items-center justify-center overflow-hidden shadow-[0_0_15px_rgba(0,136,204,0.4)]">
-              <Rocket size={28} className="text-[#0088cc] neon-text-blue" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden border border-white/5 bg-[#101016]">
+              <NeonLogo />
             </div>
             <span className="font-extrabold text-xl tracking-tight">TelePulse</span>
           </div>
@@ -153,22 +266,15 @@ export default function App() {
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-radial-gradient from-[#161B26]/50 to-transparent blur-[80px] animate-float-reverse" />
         
         <div className="relative z-10 max-w-4xl mx-auto">
-          <ScrollReveal direction="left" delay={0}>
+          <ScrollReveal direction="up" delay={0}>
             <motion.div 
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ 
-                opacity: 1, 
-                scale: [1, 1.05, 1],
-                y: [0, -5, 0]
-              }}
-              transition={{ 
-                opacity: { duration: 0.5 },
-                scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-              }}
-              className="inline-block bg-[#0088cc]/10 border border-[#0088cc]/20 text-[#0088cc] px-5 py-2 rounded-full text-sm font-bold tracking-widest uppercase mb-8 shadow-[0_0_15px_rgba(0,136,204,0.2)]"
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-40 h-40 mx-auto mb-8 relative"
             >
-              🎉 100% Gratuito • Ilimitado • Completo
+              <div className="absolute inset-0 bg-[#a855f7]/20 blur-[40px] rounded-full" />
+              <div className="absolute inset-0 bg-[#00efff]/10 blur-[30px] rounded-full translate-x-4 -translate-y-4" />
+              <NeonLogo className="w-full h-full relative z-10 scale-125" />
             </motion.div>
           </ScrollReveal>
           
@@ -198,20 +304,21 @@ export default function App() {
                       hidden: { opacity: 0, y: 10 },
                       visible: { opacity: 1, y: 0 }
                     }}
-                    transition={{ duration: 0.1, delay: (6 + index) * 0.04 }}
+                    transition={{ duration: 0.1, delay: (7 + index) * 0.04 }}
                   >
                     {char}
                   </motion.span>
                 ))}
               </span>
-              {Array.from(": Automatize Grupos, Lucre Mais").map((char, index) => (
+              <br />
+              {Array.from("Automatize Canais e Grupos").map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
                     hidden: { opacity: 0, y: 10 },
                     visible: { opacity: 1, y: 0 }
                   }}
-                  transition={{ duration: 0.1, delay: (11 + index) * 0.04 }}
+                  transition={{ duration: 0.1, delay: (12 + index) * 0.04 }}
                 >
                   {char}
                 </motion.span>
@@ -240,14 +347,28 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-4"
+              className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-4"
             >
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab("dashboard")}
-                className="group bg-[#0088cc] hover:bg-[#0077b5] text-white px-10 py-5 rounded-2xl font-bold text-lg transition-all hover:-translate-y-1 shadow-2xl shadow-[#0088cc]/30 flex items-center gap-2"
+                className="group bg-gradient-to-r from-[#0088cc] to-[#00aaff] text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(0,136,204,0.4)] hover:shadow-[0_0_40px_rgba(0,136,204,0.6)] flex items-center gap-3 relative overflow-hidden w-full sm:w-auto justify-center"
               >
-                Começar Agora de Graça <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </button>
+                <div className="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full group-hover:animate-shine" />
+                Começar Agora de Graça <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                href="https://wa.me/5521971779677?text=Ol%C3%A1%20tenho%20interesse%20no%20Tele%20Pulse."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group bg-[#2ECC71]/10 border border-[#2ECC71]/40 hover:bg-[#2ECC71]/20 text-[#2ECC71] px-10 py-5 rounded-2xl font-bold text-lg hover:-translate-y-1 flex items-center gap-3 shadow-[0_0_20px_rgba(46,204,113,0.1)] hover:shadow-[0_0_30px_rgba(46,204,113,0.2)] w-full sm:w-auto justify-center"
+              >
+                <Smartphone size={22} className="group-hover:rotate-12 transition-transform" />
+                Entrar em Contato
+              </motion.a>
             </motion.div>
           </ScrollReveal>
         </div>
@@ -338,6 +459,12 @@ export default function App() {
             </ScrollReveal>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <FeatureDetailCard 
+                icon={<Package className="text-[#0088cc]" />}
+                title="Encaminhamento do seu Próprio Estoque"
+                description="Organize seus conteúdos num canal privado. O TelePulse repassa tudo preservando emojis premium na qualidade máxima e sem selo de encaminhado, podendo anexar botões."
+                highlight={true}
+              />
+              <FeatureDetailCard 
                 icon={<Repeat className="text-[#0088cc]" />}
                 title="Encaminhamento em Tempo Real"
                 description="O TelePulse vigia os canais pra você e posta tudo na hora nos seus grupos e canais."
@@ -346,11 +473,6 @@ export default function App() {
                 icon={<Copy className="text-[#0088cc]" />}
                 title="Clone tudo de uma vez"
                 description="Copie todas as mensagens antigas instantaneamente. Ideal para quem está começando agora."
-              />
-              <FeatureDetailCard 
-                icon={<Smile className="text-[#0088cc]" />}
-                title="Emojis Premium de Verdade"
-                description="Seus emojis continuam funcionando perfeitamente, inclusive os exclusivos do Premium."
               />
               <FeatureDetailCard 
                 icon={<Layout className="text-[#0088cc]" />}
@@ -370,13 +492,13 @@ export default function App() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <FeatureDetailCard 
                 icon={<Settings className="text-[#2ECC71]" />}
-                title="Sua Copy, Seus Links"
+                title="Substituição de textos, Sua Copy, Seus Links"
                 description="Troque links e textos da fonte pelos seus automaticamente. O post chega com a sua marca."
                 highlight
               />
               <FeatureDetailCard 
                 icon={<MousePointer2 className="text-[#2ECC71]" />}
-                title="Botões que Vendem"
+                title="Botões Anexados nas Mensagens"
                 description="Adicione botões com seus próprios links em qualquer mensagem de forma simples."
               />
               <FeatureDetailCard 
@@ -449,7 +571,7 @@ export default function App() {
             <ScrollReveal direction="up" delay={0}>
               <BenefitCard 
                 icon={<Rocket className="text-[#0088cc]" />} 
-                title="Setup em 1 Minuto" 
+                title="Setup em 5 Minutos" 
                 description="Interface intuitiva e comandos guiados pelo Telegram. Você não precisa ser técnico para começar."
                 color="rgba(0, 136, 204, 0.1)"
               />
@@ -489,6 +611,19 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <ScrollReveal direction="up" delay={0}>
               <UseCaseCard 
+                icon={<Package size={28} className="text-[#F59E0B]" />}
+                title="Encaminhamento do seu Próprio Estoque"
+                description="Organize seus conteúdos, mídias e ofertas num canal privado de estoque. O TelePulse encaminha de lá para seus grupos abertos automaticamente, preservando emojis premium na qualidade máxima, removendo o selo de 'encaminhado' e permitindo anexar botões interativos."
+                iconBg="bg-[#F59E0B]/10"
+                examples={[
+                  "Alimente grupos de vendas automaticamente",
+                  "Preserve emojis premium nas mensagens",
+                  "Anexe botões interativos (CTAs) sob as mensagens"
+                ]}
+              />
+            </ScrollReveal>
+            <ScrollReveal direction="up" delay={150}>
+              <UseCaseCard 
                 icon={<TrendingUp size={28} className="text-[#2ECC71]" />}
                 title="Sinais de Apostas e Trading"
                 description="Copie entradas de canais VIP de sinais (Blaze, Bet365, Cripto) e envie para o seu próprio canal no mesmo segundo."
@@ -500,7 +635,7 @@ export default function App() {
                 ]}
               />
             </ScrollReveal>
-            <ScrollReveal direction="up" delay={150}>
+            <ScrollReveal direction="up" delay={300}>
               <UseCaseCard 
                 icon={<Newspaper size={28} className="text-[#0088cc]" />}
                 title="Canais de Ofertas e Cupons"
@@ -513,7 +648,7 @@ export default function App() {
                 ]}
               />
             </ScrollReveal>
-            <ScrollReveal direction="up" delay={300}>
+            <ScrollReveal direction="up" delay={450}>
               <UseCaseCard 
                 icon={<Heart size={28} className="text-[#FF6B6B]" />}
                 title="Estratégias de Nicho Hot"
@@ -526,7 +661,7 @@ export default function App() {
                 ]}
               />
             </ScrollReveal>
-            <ScrollReveal direction="up" delay={450}>
+            <ScrollReveal direction="up" delay={600}>
               <UseCaseCard 
                 icon={<Palette size={28} className="text-[#A855F7]" />}
                 title="Identidade e Estética"
