@@ -68,6 +68,22 @@ body {
   100% { transform: translateX(200%); }
 }
 
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.15); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.15); }
+  70% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes vortex {
+  0% { transform: rotate(0deg) scale(1.5); opacity: 0; }
+  25% { opacity: 0.8; }
+  75% { opacity: 0.8; }
+  100% { transform: rotate(720deg) scale(0.2); opacity: 0; }
+}
+
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
@@ -78,6 +94,14 @@ body {
 
 .animate-shine {
   animation: shine 2s ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.animate-vortex {
+  animation: vortex 3s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 .reveal {
