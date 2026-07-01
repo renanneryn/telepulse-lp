@@ -45,8 +45,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (HOP_BY_HOP.has(k.toLowerCase())) continue;
       outHeaders[k] = Array.isArray(v) ? v.join(", ") : String(v);
     }
-    // garante que o upstream receba o Host dele (Cloudflare exige)
-    outHeaders["host"] = "telepulse.discloud.app";
+    // NÃO setar "host" manualmente: o fetch/undici deriva o Host correto da URL.
+    // Forçar host aqui quebra SNI/conexão TLS com o Cloudflare ("fetch failed").
+    // (HOP_BY_HOP já removeu o host de entrada acima.)
 
     const method = (req.method || "GET").toUpperCase();
     let body: Buffer | undefined;
@@ -60,6 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: outHeaders,
       body: body && body.length ? body : undefined,
       redirect: "manual",
+      signal: AbortSignal.timeout(20000),
     });
 
     // ── repassa Set-Cookie reescrevendo o Domain ──
@@ -89,9 +91,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const buf = Buffer.from(await upstream.arrayBuffer());
     res.send(buf);
   } catch (err: any) {
+    // expõe a causa raiz (ECONNREFUSED / ENOTFOUND / TLS / timeout) além da msg
+    const cause = err?.cause ? String(err.cause?.code || err.cause?.message || err.cause) : "";
+    console.error("[proxy] upstream fetch failed:", err?.message, "cause:", cause);
     res.status(502).json({
       error: "proxy_upstream_error",
       detail: String(err?.message || err),
+      cause,
     });
   }
 }

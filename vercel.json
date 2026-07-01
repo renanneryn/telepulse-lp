@@ -1,53 +1,15 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
-    },
-    {
-      "src": "server.ts",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/proxy.ts",
-      "use": "@vercel/node"
-    }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/admin", "destination": "/admin/", "permanent": false }
   ],
-  "routes": [
-    {
-      "src": "/admin/api/(.*)",
-      "dest": "api/proxy.ts"
-    },
-    {
-      "src": "/admin",
-      "status": 308,
-      "headers": { "Location": "/admin/" }
-    },
-    {
-      "src": "/admin/assets/(.*)",
-      "dest": "/admin-current/assets/$1"
-    },
-    {
-      "src": "/admin/(favicon\\.svg|noise\\.svg|index\\.html)",
-      "dest": "/admin-current/$1"
-    },
-    {
-      "src": "/admin/(.*)",
-      "dest": "/admin-current/index.html"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "server.ts"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/admin/api/:path*", "destination": "/api/proxy" },
+    { "source": "/admin/assets/:path*", "destination": "/admin-current/assets/:path*" },
+    { "source": "/admin/", "destination": "/admin-current/index.html" },
+    { "source": "/admin/:path*", "destination": "/admin-current/index.html" },
+    { "source": "/:path*", "destination": "/index.html" }
   ]
 }
