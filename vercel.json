@@ -9,9 +9,34 @@
     {
       "src": "server.ts",
       "use": "@vercel/node"
+    },
+    {
+      "src": "api/proxy.ts",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/admin/api/(.*)",
+      "dest": "api/proxy.ts"
+    },
+    {
+      "src": "/admin",
+      "status": 308,
+      "headers": { "Location": "/admin/" }
+    },
+    {
+      "src": "/admin/assets/(.*)",
+      "dest": "/admin-current/assets/$1"
+    },
+    {
+      "src": "/admin/(favicon\\.svg|noise\\.svg|index\\.html)",
+      "dest": "/admin-current/$1"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin-current/index.html"
+    },
     {
       "src": "/api/(.*)",
       "dest": "server.ts"
