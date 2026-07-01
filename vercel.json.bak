@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/admin/api/(.*)",
+      "dest": "https://telepulse.discloud.app/admin/api/$1"
+    },
+    {
+      "src": "/admin",
+      "status": 308,
+      "headers": { "Location": "/admin/" }
+    },
+    {
+      "src": "/admin/assets/(.*)",
+      "dest": "/admin/assets/$1"
+    },
+    {
+      "src": "/admin/(favicon\\.svg|noise\\.svg|index\\.html)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/index.html"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server.ts"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

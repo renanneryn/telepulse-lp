@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_TRx6b9EbdBzhvYstp2dChfR5KyYt",
+      "name": "telepulse",
+      "directory": ".",
+      "orgId": "team_ZlIYDfsrXqeC1ClnyZyYedLa"
+    }
+  ]
+}
