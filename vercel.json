@@ -1,15 +1,28 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "redirects": [
-    { "source": "/admin", "destination": "/admin/", "permanent": false }
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    },
+    {
+      "src": "server.ts",
+      "use": "@vercel/node"
+    }
   ],
-  "rewrites": [
-    { "source": "/admin/api/:path*", "destination": "/api/proxy" },
-    { "source": "/admin/assets/:path*", "destination": "/admin-current/assets/:path*" },
-    { "source": "/admin/", "destination": "/admin-current/index.html" },
-    { "source": "/admin/:path*", "destination": "/admin-current/index.html" },
-    { "source": "/:path*", "destination": "/index.html" }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server.ts"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }

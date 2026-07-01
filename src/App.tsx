@@ -36,11 +36,13 @@ import {
   Coffee,
   Package,
   Smartphone,
+  Instagram,
+  MonitorOff,
+  CloudLightning,
 } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
 import VideoGenerator from "./components/VideoGenerator";
-import { COPY, LanguageSwitch, translateDocument, type Lang } from "./i18n";
 
 function TypewriterText({ text }: { text: string }) {
   const [displayText, setDisplayText] = useState("");
@@ -56,7 +58,7 @@ function TypewriterText({ text }: { text: string }) {
   }, [text]);
 
   return (
-    <span data-i18n-ignore="true">
+    <span>
       {displayText}
       <span className="animate-pulse">|</span>
     </span>
@@ -380,39 +382,21 @@ const NeonStep4 = () => (
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("landing");
-  const [lang, setLang] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "pt";
-    return window.localStorage.getItem("telepulse_lang") === "en" ? "en" : "pt";
-  });
   const [phraseIndex, setPhraseIndex] = useState(0);
 
-  const c = COPY[lang];
-  const phrases = c.phrases;
+  const phrases = [
+    "Transforme conteúdos e troque links automaticamente em tempo real.",
+    "Copie sinais, ofertas ou conteúdos entre Canais e Grupos com perfeição.",
+    "Gerencie dezenas de Canais e Grupos sem precisar de uma equipe.",
+    "Monitore, filtre, transforme e encaminhe mensagens automaticamente com suas próprias tarefas. Nunca mais perca o que é importante.",
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setPhraseIndex((prev) => (prev + 1) % phrases.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [phrases.length]);
-
-  useEffect(() => {
-    document.documentElement.lang = lang === "en" ? "en" : "pt-BR";
-    document.title = c.metaTitle;
-    window.localStorage.setItem("telepulse_lang", lang);
-
-    const run = () => translateDocument(lang);
-    const timeout = window.setTimeout(run, 0);
-    const root = document.getElementById("root");
-    const observer = root ? new MutationObserver(() => window.requestAnimationFrame(run)) : null;
-    if (root && observer) {
-      observer.observe(root, { childList: true, subtree: true, characterData: true });
-    }
-    return () => {
-      window.clearTimeout(timeout);
-      observer?.disconnect();
-    };
-  }, [lang, c.metaTitle, activeTab, phraseIndex, isMenuOpen]);
+  }, []);
 
   if (activeTab === "dashboard") {
     return (
@@ -425,21 +409,19 @@ export default function App() {
               </div>
               <span className="font-extrabold text-xl">TelePulse</span>
             </div>
-            <div className="flex items-center gap-4">
-              <LanguageSwitch lang={lang} onChange={setLang} />
-              <button
-                onClick={() => setActiveTab("landing")}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                {c.backHome}
-              </button>
-            </div>
+            <button
+              onClick={() => setActiveTab("landing")}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              Voltar para Home
+            </button>
           </div>
 
           <div className="bg-[#1A1F2E] border border-white/5 rounded-3xl p-8 shadow-2xl">
-            <h2 className="text-3xl font-bold mb-6">{c.dashboardTitle}</h2>
+            <h2 className="text-3xl font-bold mb-6">Conectar Telegram</h2>
             <p className="text-gray-400 mb-8">
-              {c.dashboardIntro}
+              Para começar a automatizar, precisamos conectar sua conta. Siga as
+              instruções no nosso bot oficial.
             </p>
 
             <div className="space-y-6">
@@ -448,10 +430,11 @@ export default function App() {
                   <span className="w-8 h-8 bg-[#0088cc] rounded-full flex items-center justify-center text-sm">
                     1
                   </span>
-                  {c.dashboardStep1}
+                  Acesse o Bot
                 </h3>
                 <p className="text-gray-400 mb-4">
-                  {c.dashboardStep1Text}
+                  Clique no botão abaixo para abrir o bot no Telegram e obter
+                  seu código de acesso.
                 </p>
                 <a
                   href="https://t.me/tele_pulsebot?start=lp"
@@ -459,7 +442,7 @@ export default function App() {
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 bg-[#0088cc] hover:bg-[#0077b5] px-6 py-3 rounded-xl font-bold transition-all"
                 >
-                  {c.openBot} <ArrowRight size={18} />
+                  Abrir @tele_pulsebot <ArrowRight size={18} />
                 </a>
               </div>
 
@@ -468,10 +451,11 @@ export default function App() {
                   <span className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center text-sm">
                     2
                   </span>
-                  {c.dashboardStep2}
+                  Configurar Tarefas
                 </h3>
                 <p className="text-gray-400">
-                  {c.dashboardStep2Text}
+                  Após conectar, você poderá criar tarefas de encaminhamento e
+                  clonagem diretamente por aqui ou pelo bot.
                 </p>
               </div>
             </div>
@@ -490,8 +474,38 @@ export default function App() {
       <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#0F1419]/80 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden border border-white/5 bg-[#101016]">
-              <NeonLogo />
+            <div className="w-12 h-12 relative flex items-center justify-center">
+              {/* Vortex Ambient Glow */}
+              <div className="absolute inset-0 bg-[#00efff]/20 blur-[10px] rounded-full" />
+
+              {/* Vortex Swirls */}
+              <div
+                className="absolute inset-[-4px] rounded-full animate-vortex"
+                style={{
+                  background:
+                    "conic-gradient(from 0deg, transparent 0%, rgba(168,85,247,0.3) 25%, transparent 50%, rgba(0,239,255,0.3) 75%, transparent 100%)",
+                  filter: "blur(2px)",
+                  animationDelay: "0s",
+                }}
+              />
+              <div
+                className="absolute inset-[-8px] rounded-full animate-vortex"
+                style={{
+                  background:
+                    "conic-gradient(from 90deg, transparent 0%, rgba(0,239,255,0.2) 25%, transparent 50%, rgba(168,85,247,0.2) 75%, transparent 100%)",
+                  filter: "blur(4px)",
+                  animationDelay: "1.5s",
+                  animationDuration: "4s",
+                }}
+              />
+
+              {/* Event Horizon (Inner Black Hole) */}
+              <div className="absolute inset-[1px] bg-[#0F1419] rounded-full shadow-[inset_0_0_10px_rgba(0,0,0,1)] border border-white/5" />
+
+              {/* Icon */}
+              <div className="w-10 h-10 relative z-10 flex items-center justify-center">
+                <NeonLogo />
+              </div>
             </div>
             <span className="font-extrabold text-xl tracking-tight">
               TelePulse
@@ -503,33 +517,32 @@ export default function App() {
               href="#benefits"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              {c.navBenefits}
+              Benefícios
             </a>
             <a
               href="#use-cases"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              {c.navUseCases}
+              Casos de Uso
             </a>
             <a
               href="#how-it-works"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              {c.navHowItWorks}
+              Como Funciona
             </a>
             <a
               href="#faq"
               className="text-gray-400 hover:text-white transition-colors font-medium"
             >
-              {c.navFaq}
+              FAQ
             </a>
             <button
               onClick={() => setActiveTab("dashboard")}
               className="bg-[#0088cc] hover:bg-[#0077b5] text-white px-6 py-3 rounded-xl font-bold transition-all hover:-translate-y-0.5 shadow-lg shadow-[#0088cc]/20"
             >
-              {c.startNow}
+              Começar Agora
             </button>
-            <LanguageSwitch lang={lang} onChange={setLang} />
           </div>
 
           <button
@@ -548,28 +561,28 @@ export default function App() {
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              {c.navBenefits}
+              Benefícios
             </a>
             <a
               href="#use-cases"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              {c.navUseCases}
+              Casos de Uso
             </a>
             <a
               href="#how-it-works"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              {c.navHowItWorks}
+              Como Funciona
             </a>
             <a
               href="#faq"
               className="block text-gray-400 p-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              {c.navFaq}
+              FAQ
             </a>
             <button
               onClick={() => {
@@ -578,11 +591,8 @@ export default function App() {
               }}
               className="w-full bg-[#0088cc] text-white py-3 rounded-xl font-bold"
             >
-              {c.startNow}
+              Começar Agora
             </button>
-            <div className="flex justify-center pt-2">
-              <LanguageSwitch lang={lang} onChange={setLang} />
-            </div>
           </div>
         )}
       </header>
@@ -647,7 +657,7 @@ export default function App() {
               animate="visible"
               className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6"
             >
-              {Array.from(c.heroLead).map((char, index) => (
+              {Array.from("Operação ").map((char, index) => (
                 <motion.span
                   key={index}
                   variants={{
@@ -656,36 +666,56 @@ export default function App() {
                   }}
                   transition={{ duration: 0.1, delay: index * 0.04 }}
                 >
-                  {char}
+                  {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
               <span className="gradient-text">
-                {Array.from(c.heroAccent).map((char, index) => (
+                {Array.from("24/7").map((char, index) => (
                   <motion.span
                     key={index}
                     variants={{
                       hidden: { opacity: 0, y: 10 },
                       visible: { opacity: 1, y: 0 },
                     }}
-                    transition={{ duration: 0.1, delay: (7 + index) * 0.04 }}
+                    transition={{ duration: 0.1, delay: (9 + index) * 0.04 }}
                   >
-                    {char}
+                    {char === " " ? "\u00A0" : char}
                   </motion.span>
                 ))}
               </span>
               <br />
-              {Array.from(c.heroSecond).map((char, index) => (
-                <motion.span
-                  key={index}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ duration: 0.1, delay: (12 + index) * 0.04 }}
-                >
-                  {char}
-                </motion.span>
-              ))}
+              <div className="text-4xl md:text-5xl mt-2 mb-4">
+                {Array.from("Automatize ou Clone Canais e Grupos").map((char, index) => (
+                  <motion.span
+                    key={index}
+                    variants={{
+                      hidden: { opacity: 0, y: 10 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.1, delay: (13 + index) * 0.04 }}
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </motion.span>
+                ))}
+              </div>
+              
+              <motion.div 
+                className="mt-6 mb-4 inline-flex items-center gap-3 px-2 py-2 pr-6 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.5, type: "spring" }}
+              >
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#2ECC71]/20 border border-[#2ECC71]/30">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2ECC71] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#2ECC71]"></span>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm md:text-base text-gray-300 font-medium tracking-normal">
+                  <MonitorOff size={18} className="text-gray-400" />
+                  <span>Funciona&nbsp;até&nbsp;com&nbsp;o&nbsp;<strong className="text-white font-bold">PC&nbsp;OFF-LINE</strong></span>
+                </div>
+              </motion.div>
             </motion.h1>
           </ScrollReveal>
 
@@ -719,7 +749,7 @@ export default function App() {
                 className="group bg-gradient-to-r from-[#0088cc] to-[#00aaff] text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-[0_0_30px_rgba(0,136,204,0.4)] hover:shadow-[0_0_40px_rgba(0,136,204,0.6)] flex items-center gap-3 relative overflow-hidden w-full sm:w-auto justify-center"
               >
                 <div className="absolute inset-0 bg-white/20 -skew-x-12 -translate-x-full group-hover:animate-shine" />
-                {c.startFree}{" "}
+                Começar Agora de Graça{" "}
                 <ArrowRight
                   size={22}
                   className="group-hover:translate-x-1 transition-transform"
@@ -728,7 +758,7 @@ export default function App() {
               <motion.a
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                href="https://wa.me/5521971779677?text=Ol%C3%A1%20tenho%20interesse%20no%20Tele%20Pulse."
+                href="https://wa.me/5521971779677?text=Ol%C3%A1,%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group bg-[#2ECC71]/10 border border-[#2ECC71]/40 hover:bg-[#2ECC71]/20 text-[#2ECC71] px-10 py-5 rounded-2xl font-bold text-lg hover:-translate-y-1 flex items-center gap-3 shadow-[0_0_20px_rgba(46,204,113,0.1)] hover:shadow-[0_0_30px_rgba(46,204,113,0.2)] w-full sm:w-auto justify-center"
@@ -737,7 +767,7 @@ export default function App() {
                   size={22}
                   className="group-hover:rotate-12 transition-transform"
                 />
-                {c.contact}
+                Entrar em Contato
               </motion.a>
             </motion.div>
           </ScrollReveal>
@@ -1152,12 +1182,23 @@ export default function App() {
             </p>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={350} duration={800}>
-            <button
-              onClick={() => setActiveTab("dashboard")}
-              className="bg-[#0088cc] hover:bg-[#0077b5] text-white px-12 py-6 rounded-2xl font-bold text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-[#0088cc]/30 flex items-center gap-2 mx-auto"
-            >
-              {c.startNow} <ArrowRight size={24} />
-            </button>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+              <button
+                onClick={() => setActiveTab("dashboard")}
+                className="bg-[#0088cc] hover:bg-[#0077b5] text-white px-12 py-6 rounded-2xl font-bold text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-[#0088cc]/30 flex items-center gap-2"
+              >
+                Começar Agora <ArrowRight size={24} />
+              </button>
+              <a
+                href="https://wa.me/5521971779677?text=Ol%C3%A1,%20gostaria%20de%20saber%20mais%20informa%C3%A7%C3%B5es."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#2ECC71]/10 border border-[#2ECC71]/40 hover:bg-[#2ECC71]/20 text-[#2ECC71] px-12 py-6 rounded-2xl font-bold text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-[#2ECC71]/10 flex items-center gap-3 w-full sm:w-auto justify-center"
+              >
+                <Smartphone size={24} />
+                Falar no WhatsApp
+              </a>
+            </div>
           </ScrollReveal>
         </div>
       </section>
@@ -1212,7 +1253,16 @@ export default function App() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t border-white/10 text-center">
+      <footer className="py-12 px-4 border-t border-white/10 flex flex-col items-center justify-center text-center">
+        <a
+          href="https://instagram.com/tl_pulse"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-white transition-colors mb-6 flex items-center gap-2 font-medium"
+        >
+          <Instagram size={20} />
+          @tl_pulse
+        </a>
         <p className="text-gray-500 text-sm">
           &copy; 2026 TelePulse. Todos os direitos reservados.
         </p>
