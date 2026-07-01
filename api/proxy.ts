@@ -32,6 +32,40 @@ function readRawBody(req: VercelRequest): Promise<Buffer> {
   });
 }
 
+const TRANSIENT_CODES = new Set([
+  "ENOTFOUND", "EAI_AGAIN", "ECONNRESET", "ECONNREFUSED",
+  "UND_ERR_CONNECT_TIMEOUT", "UND_ERR_SOCKET",
+]);
+
+function isTransient(err: any): boolean {
+  const code = err?.cause?.code || err?.code || "";
+  if (TRANSIENT_CODES.has(code)) return true;
+  if (err?.name === "TimeoutError") return true;
+  const msg = String(err?.message || "").toLowerCase();
+  return msg.includes("fetch failed");
+}
+
+// fetch com retry curto — o runtime da Vercel às vezes falha em resolver o DNS do
+// host Cloudflare em cold start (ENOTFOUND). Uma falha transitória é reabsorvida em
+// <1s em vez de virar 502 na cara do admin. HTTP 4xx/5xx NÃO é exceção → passa direto.
+async function fetchWithRetry(target: string, init: any): Promise<Response> {
+  const backoffs = [150, 500, 1200];
+  let lastErr: any;
+  for (let attempt = 0; attempt <= backoffs.length; attempt++) {
+    try {
+      return await fetch(target, { ...init, signal: AbortSignal.timeout(15000) });
+    } catch (err: any) {
+      lastErr = err;
+      if (attempt < backoffs.length && isTransient(err)) {
+        await new Promise((r) => setTimeout(r, backoffs[attempt]));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // req.url já vem como /admin/api/... (o rewrite preserva o path original)
@@ -56,12 +90,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (body && body.length) outHeaders["content-length"] = String(body.length);
     }
 
-    const upstream = await fetch(target, {
+    const upstream = await fetchWithRetry(target, {
       method,
       headers: outHeaders,
       body: body && body.length ? body : undefined,
       redirect: "manual",
-      signal: AbortSignal.timeout(20000),
     });
 
     // ── repassa Set-Cookie reescrevendo o Domain ──
