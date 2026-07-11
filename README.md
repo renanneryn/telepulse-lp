@@ -13,7 +13,7 @@
 
 ## 🛠️ How It Works
 
-1. **Access the Bot:** Open [@encaminhadorabot](https://t.me/encaminhadorabot) on Telegram.
+1. **Access the Bot:** Open [@encaminhadorabot](https://t.me/tele_pulse) on Telegram.
 2. **Connect Your Account:** Follow the instructions to link your Telegram account securely.
 3. **Configure Tasks:** Set up your forwarding or cloning tasks through the bot or the dashboard.
 4. **Start Automating:** Hit "Start" and let TelePulse handle the rest.
