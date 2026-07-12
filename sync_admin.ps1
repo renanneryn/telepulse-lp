@@ -1,9 +1,9 @@
 # sync_admin.ps1 - build + sync + deploy
 # Aborta se build falhar para nao pushar dist vazio (que apagaria o painel no Vercel)
 
-$frontendDir = "C:\Users\x\Desktop\Work TP\Telepulse\painel_admin\frontend"
-$dst = "C:\Users\x\Documents\Telepulse\lp\public\admin-current"
-$lpDir = "C:\Users\x\Documents\Telepulse\lp"
+$frontendDir = "C:\Users\x\projects\TelePulse\Work TP\Telepulse\painel_admin\frontend"
+$dst = "C:\Users\x\projects\TelePulse\lp\lp\public\admin-current"
+$lpDir = "C:\Users\x\projects\TelePulse\lp\lp"
 
 # 1. Build
 Write-Host ">> Building admin frontend..."
