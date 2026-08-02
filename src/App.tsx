@@ -39,6 +39,7 @@ import {
   Instagram,
   MonitorOff,
   CloudLightning,
+  Bot,
 } from "lucide-react";
 import ScrollReveal from "./components/ScrollReveal";
 import Starfield from "./components/Starfield";
@@ -378,6 +379,11 @@ const NeonStep4 = () => (
     <path d="M 40 65 H 60" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
   </svg>
 );
+
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -1267,6 +1273,133 @@ export default function App() {
           &copy; 2026 TelePulse. Todos os direitos reservados.
         </p>
       </footer>
+      <AIChatWidget />
+    </div>
+  );
+}
+
+function AIChatWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      role: "assistant",
+      content:
+        "Oi! Posso tirar suas duvidas sobre automacao, clone e espelhamento no Telegram.",
+    },
+  ]);
+
+  async function sendMessage(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const content = input.trim();
+    if (!content || isLoading) return;
+
+    const nextMessages: ChatMessage[] = [...messages, { role: "user", content }];
+    setMessages(nextMessages);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ messages: nextMessages }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data?.message || "Falha no chat");
+      }
+      setMessages((current) => [
+        ...current,
+        { role: "assistant", content: data.reply },
+      ]);
+    } catch (error: any) {
+      setMessages((current) => [
+        ...current,
+        {
+          role: "assistant",
+          content:
+            error?.message ||
+            "Nao consegui responder agora. Tente de novo em instantes.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed bottom-5 right-5 z-[80] flex flex-col items-end gap-3">
+      {isOpen && (
+        <div className="w-[calc(100vw-2.5rem)] max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-[#101621]/95 shadow-2xl shadow-black/40 backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0088cc]/20 text-[#00efff]">
+                <Bot size={20} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-white">Chat IA</div>
+                <div className="text-xs text-gray-400">TelePulse</div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+              aria-label="Fechar chat"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="flex max-h-[420px] min-h-[300px] flex-col gap-3 overflow-y-auto px-4 py-4">
+            {messages.map((message, index) => (
+              <div
+                key={`${message.role}-${index}`}
+                className={`max-w-[86%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  message.role === "user"
+                    ? "ml-auto bg-[#0088cc] text-white"
+                    : "mr-auto border border-white/10 bg-white/[0.08] text-gray-100"
+                }`}
+              >
+                {message.content}
+              </div>
+            ))}
+            {isLoading && (
+              <div className="mr-auto rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-sm text-gray-300">
+                Digitando...
+              </div>
+            )}
+          </div>
+
+          <form onSubmit={sendMessage} className="flex gap-2 border-t border-white/10 p-3">
+            <input
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              placeholder="Pergunte sobre o TelePulse"
+              className="min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-gray-500 focus:border-[#0088cc]"
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#0088cc] text-white transition-colors hover:bg-[#0077b5] disabled:cursor-not-allowed disabled:opacity-50"
+              aria-label="Enviar mensagem"
+            >
+              <Send size={18} />
+            </button>
+          </form>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setIsOpen((value) => !value)}
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#0088cc] text-white shadow-2xl shadow-[#0088cc]/30 transition-all hover:-translate-y-1 hover:bg-[#0077b5]"
+        aria-label="Abrir chat IA"
+      >
+        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+      </button>
     </div>
   );
 }
