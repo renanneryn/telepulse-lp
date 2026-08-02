@@ -24,6 +24,12 @@
 - **Backend:** Node.js, Express, Telegram API (via `telegram` library).
 - **Deployment:** Vercel / Cloud Run.
 
+## Chat IA
+
+The website chat uses Groq through the serverless `/api/chat` endpoint. Configure
+`GROQ_API_KEY` in Vercel before deploying. `GROQ_MODEL` is optional and defaults
+to `llama-3.3-70b-versatile`.
+
 ## 📄 License
 
 © 2026 TelePulse. All rights reserved.
