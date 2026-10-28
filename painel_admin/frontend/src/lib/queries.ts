@@ -26,8 +26,8 @@ export interface Stats {
   total_rules: number;
   connected_with_tasks: number;
   total_active_tasks: number;
-  paid_active: number;
-  paid_expiring_7d: number;
+  vip_active: number;
+  vip_expiring_7d: number;
   trial_active: number;
 }
 
@@ -37,7 +37,7 @@ export interface User {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  plan: "free" | "paid" | string;
+  plan: "free" | "vip" | string;
   plan_expires?: number;
   trial_started?: number;
   plan_paid_at?: number;
@@ -281,15 +281,15 @@ export interface Funnel {
   connected: number;
   never_connected: number;
   trial_active: number;
-  paid_active: number;
+  vip_active: number;
   free: number;
-  connected_paid: number;
+  connected_vip: number;
   connected_trial: number;
   banned: number;
   ever_trial: number;
   trial_expired: number;
-  /** Linhas ainda marcadas paid mas ja vencidas — mede a varredura. */
-  stale_paid_rows: number;
+  /** Linhas ainda marcadas vip mas ja vencidas — mede a varredura. */
+  stale_vip_rows: number;
 }
 
 export function useFunnel() {
@@ -627,7 +627,7 @@ export function useSettings() {
 
 export type BotMode = { mode: "free" | "paid"; free_mode_since: number };
 
-/** Modo global do bot. Em "free" o bot trata TODO usuário como paid — sem isto
+/** Modo global do bot. Em "free" o bot trata TODO usuário como VIP — sem isto
  *  o painel mostrava a base inteira como FREE enquanto todos tinham acesso. */
 export function useBotMode() {
   return useQuery<BotMode>({

@@ -32,7 +32,7 @@ const FIELDS: TextField[] = [
   // Bloqueios & Avisos
   { key: "trial_banner_text", label: "Banner de trial (novo usuário)", group: "Bloqueios & Avisos", multiline: true, hint: "Use {dias} para a duração", requires: ["{dias}"] },
   { key: "lockdown_block_text", label: "Aviso de bot trancado", group: "Bloqueios & Avisos", multiline: true },
-  { key: "paid_block_text", label: "Aviso de recurso exclusivo PAID", group: "Bloqueios & Avisos", multiline: true, hint: "Use {recurso} e {whatsapp}", requires: ["{recurso}"] },
+  { key: "paid_block_text", label: "Aviso de recurso exclusivo VIP", group: "Bloqueios & Avisos", multiline: true, hint: "Use {recurso} e {whatsapp}", requires: ["{recurso}"] },
   { key: "tester_clone_block_text", label: "Aviso: Clone bloqueado no teste", group: "Bloqueios & Avisos", multiline: true },
 ];
 

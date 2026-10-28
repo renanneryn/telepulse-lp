@@ -104,7 +104,7 @@ export function Funnel() {
               />
               <Step
                 label="PAGANTES"
-                value={f.paid_active}
+                value={f.vip_active}
                 total={f.started}
                 prev={f.connected}
                 to="/vips"
@@ -126,7 +126,7 @@ export function Funnel() {
             />
             <StatCard
               label="CONECTADOS SEM PLANO"
-              value={Math.max(0, f.connected - f.connected_paid - f.connected_trial)}
+              value={Math.max(0, f.connected - f.connected_vip - f.connected_trial)}
               to="/users?connected=1&plan=free"
               hint="usaram, mas não pagam"
             />
@@ -146,10 +146,10 @@ export function Funnel() {
               />
               <StatCard label="TRIAL EXPIRADO" value={f.trial_expired} hint="não renovaram" />
               <StatCard
-                label="LINHAS PAID VENCIDAS"
-                value={f.stale_paid_rows}
+                label="LINHAS VIP VENCIDAS"
+                value={f.stale_vip_rows}
                 hint={
-                  f.stale_paid_rows > 0 ? "pendentes de varredura" : "banco limpo"
+                  f.stale_vip_rows > 0 ? "pendentes de varredura" : "banco limpo"
                 }
               />
             </div>

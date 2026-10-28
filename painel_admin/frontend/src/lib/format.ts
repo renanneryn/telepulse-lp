@@ -71,7 +71,15 @@ export function shortId(id: number | string | null | undefined): string {
 export function daysRemaining(planExpires: number | null | undefined): number | null {
   if (!planExpires) return null;
   const secs = planExpires - Date.now() / 1000;
-  return Math.floor(secs / 86400);
+  // Para cima enquanto não expirou: 30 dias recém-concedidos = 30d (antes dava 29d).
+  // Expirado segue negativo (-1 = venceu há menos de 1 dia).
+  return secs > 0 ? Math.ceil(secs / 86400) : Math.floor(secs / 86400);
+}
+
+/** 'vip' é o único plano pago. 'paid' é o nome antigo (backend ainda não migrado). */
+export function isVipPlan(plan?: string): boolean {
+  const p = (plan || "").toLowerCase();
+  return p === "vip" || p === "paid";
 }
 
 // Rótulo pronto: "EXPIRADO" (d < 0) / "hoje" (d === 0) / "Nd" (d > 0) / "—" (sem data).
@@ -84,15 +92,14 @@ export function fmtDaysRemaining(planExpires: number | null | undefined): string
 }
 
 // Espelha db.is_tester / get_stats.trial_active: usuário está em trial ativo quando
-// já iniciou o trial (trial_started > 0), o plano é paid/vip e ainda não expirou.
+// já iniciou o trial (trial_started > 0), o plano é vip e ainda não expirou.
 export function isTrialUser(u: {
   trial_started?: number;
   plan?: string;
   plan_expires?: number;
 }): boolean {
   const now = Date.now() / 1000;
-  const p = (u.plan || "").toLowerCase();
-  return (u.trial_started ?? 0) > 0 && (p === "paid" || p === "vip") && (u.plan_expires ?? 0) > now;
+  return (u.trial_started ?? 0) > 0 && isVipPlan(u.plan) && (u.plan_expires ?? 0) > now;
 }
 
 export function fmtDuration(ms: number): string {

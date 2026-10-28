@@ -36,7 +36,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { CloneErrorsModal } from "@/components/CloneErrorsModal";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { ApiError } from "@/lib/api";
-import { fmtDate, fmtReais, daysRemaining, fmtDaysRemaining, isTrialUser } from "@/lib/format";
+import { fmtDate, fmtReais, daysRemaining, fmtDaysRemaining, isTrialUser, isVipPlan } from "@/lib/format";
 import { toast } from "@/hooks/useToast";
 
 export function UserDetail() {
@@ -117,7 +117,7 @@ export function UserDetail() {
   const notesValue = adminNotes ?? String(user.admin_notes ?? "");
 
   async function savePlanForm(payload: {
-    plan: "free" | "paid";
+    plan: "free" | "vip";
     plan_paid_at?: number;
     plan_expires?: number;
   }) {
@@ -129,13 +129,13 @@ export function UserDetail() {
     }
   }
 
-  /** Trial → PAID real. Precisa de `plan_days`: é ele que faz o backend zerar
-   *  `trial_started` (routes/users.py) e somar os dias a partir do que ainda
-   *  resta. O /extend NÃO serve aqui — ele mantém a conta como trial. */
+  /** Trial → VIP. Precisa de `plan_days`: o backend remove o trial por completo
+   *  (zera `trial_started`) e conta os dias a partir de agora (routes/users.py).
+   *  O /extend NÃO serve aqui — ele mantém a conta como trial. */
   async function handlePromote(days: number) {
     try {
-      await patch.mutateAsync({ plan: "paid", plan_days: days });
-      toast("ok", `Promovido a PAID (+${days} dias)`);
+      await patch.mutateAsync({ plan: "vip", plan_days: days });
+      toast("ok", `Trial encerrado — VIP por ${days} dias`);
     } catch (e) {
       toast("err", (e as Error).message);
     }
@@ -274,7 +274,7 @@ export function UserDetail() {
           </div>
         </div>
         <div className="row gap-sm">
-          <PlanTag plan={user.plan} isTrial={isTrialUser(user)} />
+          <PlanTag plan={user.plan} isTrial={isTrialUser(user)} expires={user.plan_expires} />
           <PulseDot on={!!user.connected} />
           <span className="label-caps">{user.connected ? "ONLINE" : "OFFLINE"}</span>
           {user.banned ? <Tag tone="danger">BANIDO</Tag> : null}
@@ -950,7 +950,7 @@ function PlanEditor({
   user: import("@/lib/queries").User;
   lastPaidAt: number | undefined;
   onSave: (p: {
-    plan: "free" | "paid";
+    plan: "free" | "vip";
     plan_paid_at?: number;
     plan_expires?: number;
   }) => void;
@@ -961,18 +961,17 @@ function PlanEditor({
   extending: boolean;
   onPromote: (days: number) => Promise<void>;
 }) {
-  const effectivePlan: "free" | "paid" =
-    String(user.plan) === "paid" || String(user.plan) === "vip" ? "paid" : "free";
+  const effectivePlan: "free" | "vip" = isVipPlan(String(user.plan)) ? "vip" : "free";
   const currentlyTrial = isTrialUser(user);
 
-  const [plan, setPlan] = useState<"free" | "paid">(effectivePlan);
+  const [plan, setPlan] = useState<"free" | "vip">(effectivePlan);
   const [paidAt, setPaidAt] = useState<string>(
     epochToDateInput(user.plan_paid_at || lastPaidAt),
   );
   const [expires, setExpires] = useState<string>(
     epochToDateInput(user.plan_expires),
   );
-  const [trialDays, setTrialDays] = useState(7);
+  const [trialDays, setTrialDays] = useState(14);
   const [extendDays, setExtendDays] = useState(30);
   const [confirmTrial, setConfirmTrial] = useState(false);
   const [confirmExtend, setConfirmExtend] = useState(false);
@@ -983,7 +982,7 @@ function PlanEditor({
   const expiresEpoch = dateInputToEpoch(expires);
   const daysLeft =
     expiresEpoch !== undefined
-      ? Math.max(0, Math.floor((expiresEpoch - Date.now() / 1000) / 86400))
+      ? Math.max(0, Math.ceil((expiresEpoch - Date.now() / 1000) / 86400))
       : null;
 
   const previewExtendEpoch =
@@ -991,7 +990,7 @@ function PlanEditor({
   const previewExtendDate = new Date(previewExtendEpoch * 1000).toLocaleDateString("pt-BR");
 
   function applyPreset(days: number) {
-    setPlan("paid");
+    setPlan("vip");
     const today = new Date();
     setPaidAt(epochToDateInput(Math.floor(today.getTime() / 1000)));
     const exp = new Date(today.getTime() + days * 86400 * 1000);
@@ -1001,15 +1000,15 @@ function PlanEditor({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     const payload: {
-      plan: "free" | "paid";
+      plan: "free" | "vip";
       plan_paid_at?: number;
       plan_expires?: number;
     } = { plan };
-    if (plan === "paid") {
+    if (plan === "vip") {
       payload.plan_paid_at = dateInputToEpoch(paidAt);
       payload.plan_expires = dateInputToEpoch(expires);
       if (!payload.plan_expires) {
-        toast("err", "Defina a data de expiração para o plano PAID.");
+        toast("err", "Defina a data de expiração para o plano VIP.");
         return;
       }
     } else {
@@ -1027,10 +1026,10 @@ function PlanEditor({
           <select
             className="select"
             value={plan}
-            onChange={(e) => setPlan(e.target.value as "free" | "paid")}
+            onChange={(e) => setPlan(e.target.value as "free" | "vip")}
           >
             <option value="free">FREE</option>
-            <option value="paid">PAID</option>
+            <option value="vip">VIP</option>
           </select>
         </div>
         <div className="input-group">
@@ -1106,18 +1105,17 @@ function PlanEditor({
         >
           SET FREE
         </button>
-        {/* Só em trial: o SALVAR do formulário não zera `trial_started`, então
-            sem este botão não havia como transformar tester em pagante real —
-            ele continuava aparecendo na aba Testers e fora dos VIPs. */}
+        {/* Só em trial: encerra o trial por completo e dá VIP a partir de agora —
+            sem este botão o tester continuava na aba Testers e fora dos VIPs. */}
         {currentlyTrial && (
           <button
             type="button"
             className="btn btn-sm primary"
             disabled={saving}
             onClick={() => setConfirmPromote(true)}
-            title="Encerrar o trial e virar PAID real"
+            title="Encerrar o trial e virar VIP"
           >
-            ⭐ PROMOVER A PAID
+            ⭐ PROMOVER A VIP
           </button>
         )}
         <div style={{ flex: 1 }} />
@@ -1179,12 +1177,12 @@ function PlanEditor({
 
     <ConfirmDialog
       open={confirmPromote}
-      title={`Promover a PAID (+${promoteDays} dias)?`}
+      title={`Promover a VIP (${promoteDays} dias)?`}
       body={
         <>
-          O trial termina e a conta vira <strong>pagante de verdade</strong>. Os
-          dias que ainda restam do trial <strong>somam</strong> aos{" "}
-          {promoteDays} — nada se perde. O usuário sai da aba Testers e passa a
+          O trial é <strong>removido por completo</strong> e a conta vira{" "}
+          <strong>VIP por {promoteDays} dias a partir de agora</strong> — os dias
+          que restavam do trial não somam. O usuário sai da aba Testers e passa a
           contar como VIP.
         </>
       }
@@ -1201,9 +1199,9 @@ function PlanEditor({
       open={confirmTrial}
       title={`Conceder trial de ${trialDays} dia(s)?`}
       body={
-        effectivePlan === "paid" && !currentlyTrial ? (
+        effectivePlan === "vip" && !currentlyTrial ? (
           <>
-            Este usuário já tem plano <strong>PAID real</strong>. Conceder trial vai{" "}
+            Este usuário já tem <strong>VIP</strong>. Conceder trial vai{" "}
             <strong>sobrescrever a expiração atual</strong> e marcar a conta como trial (
             <code>trial_started</code>).
           </>
@@ -1228,7 +1226,7 @@ function PlanEditor({
       body={
         <>
           Nova expiração prevista: <strong>{previewExtendDate}</strong>.{" "}
-          {effectivePlan === "free" ? <>O usuário vira PAID.</> : <>Continua com o plano atual (trial estende como trial).</>}
+          {effectivePlan === "free" ? <>O usuário vira VIP.</> : <>Continua com o plano atual (trial estende como trial).</>}
         </>
       }
       confirmLabel="ESTENDER"

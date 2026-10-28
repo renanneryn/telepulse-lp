@@ -63,7 +63,7 @@ export function Settings() {
       toast(
         "ok",
         next === "free"
-          ? "🎁 Modo gratuito ligado — todos funcionam como PAID"
+          ? "🎁 Modo gratuito ligado — todos funcionam como VIP"
           : `💎 Modo pago restaurado${res.extended ? ` — ${res.extended} plano(s) estendido(s)` : ""}`,
       );
     } catch (e) {
@@ -75,7 +75,7 @@ export function Settings() {
     const next = lockdownOn ? "0" : "1";
     try {
       await setter.mutateAsync({ key: "lockdown", value: next });
-      toast("ok", next === "1" ? "🔒 Bot TRANCADO (só PAID)" : "🔓 Bot LIBERADO");
+      toast("ok", next === "1" ? "🔒 Bot TRANCADO (só VIP)" : "🔓 Bot LIBERADO");
     } catch (e) {
       toast("err", (e as Error).message);
     }
@@ -120,7 +120,7 @@ export function Settings() {
           </div>
           <div style={{ color: "var(--text-dim)", fontSize: "var(--fz-xs)", marginTop: 4 }}>
             {lockdownOn
-              ? "Só assinantes PAID (e admins) usam o bot. Tarefas de FREE ficam pausadas."
+              ? "Só assinantes VIP (e admins) usam o bot. Tarefas de FREE ficam pausadas."
               : "Qualquer usuário pode usar o bot normalmente."}
           </div>
         </div>
@@ -150,7 +150,7 @@ export function Settings() {
           </div>
           <div style={{ color: "var(--text-dim)", fontSize: "var(--fz-xs)", marginTop: 4 }}>
             {freeMode
-              ? "Todos os usuários funcionam como PAID. Os planos pagos estão congelados — o tempo parado é devolvido ao voltar para o modo pago."
+              ? "Todos os usuários funcionam como VIP. Os planos pagos estão congelados — o tempo parado é devolvido ao voltar para o modo pago."
               : "Cada usuário depende do próprio plano."}
           </div>
         </div>

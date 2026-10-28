@@ -11,7 +11,7 @@ import { IdChip } from "@/components/IdChip";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePref } from "@/hooks/usePref";
-import { fmtDate, daysRemaining, fmtDaysRemaining, isTrialUser } from "@/lib/format";
+import { fmtDate, daysRemaining, fmtDaysRemaining, isTrialUser, isVipPlan } from "@/lib/format";
 import { toast } from "@/hooks/useToast";
 
 type SortKey =
@@ -62,7 +62,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
   const connParam = searchParams.get("connected");
   const [plan, setPlan] = usePref(
     `users.${_prefScope}.plan`,
-    ["free", "paid", "trial"].includes(planParam) ? planParam : "",
+    ["free", "vip", "trial"].includes(planParam) ? planParam : planParam === "paid" ? "vip" : "",
   );
   // VIPs/Testers: mostrar todos (conectados ou não) por padrão. Lista normal: só conectados.
   // `?connected=` (vazio) e intencional: mostra todos, sem o default de 1.
@@ -91,9 +91,9 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
   const queryParams = {
     page,
     per_page: 50,
-    // VIP: plano sempre 'paid'. Modo "expirando" (vindo do dashboard) ignora conn/plan.
+    // VIP: plano sempre 'vip'. Modo "expirando" (vindo do dashboard) ignora conn/plan.
     search: debouncedSearch || undefined,
-    plan: expiredOnly ? "expired_vip" : (testersOnly ? "trial" : (vipOnly ? "paid" : (expiringDays ? undefined : (plan || undefined)))),
+    plan: expiredOnly ? "expired_vip" : (testersOnly ? "trial" : (vipOnly ? "vip" : (expiringDays ? undefined : (plan || undefined)))),
     connected: expiringDays ? undefined : (connected === "" ? undefined : Number(connected)),
     banned: banned === "" ? undefined : Number(banned),
     expiring_days: expiringDays,
@@ -105,7 +105,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
   const { by: sortBy, dir: sortDir } = sortState(sort);
 
   // Guard de reentrância por usuário. O `disabled` do botão só ativa no render
-  // seguinte, então dois cliques rápidos em "PAID 30D" mandavam dois PATCH — e
+  // seguinte, então dois cliques rápidos em "VIP 30D" mandavam dois PATCH — e
   // como o backend agora SOMA os dias, isso virava 60 dias em vez de 30.
   const inFlight = useRef<Set<number>>(new Set());
 
@@ -228,7 +228,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
       key: "plan",
       sortKey: "plan",
       header: "PLANO",
-      render: (u) => <PlanTag plan={u.plan} isTrial={isTrialUser(u)} />,
+      render: (u) => <PlanTag plan={u.plan} isTrial={isTrialUser(u)} expires={u.plan_expires} />,
       width: "100px",
     },
     {
@@ -237,13 +237,13 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
       header: expiredOnly ? "EXPIROU" : "EXPIRA",
       render: (u) => {
         // Na aba de ex-VIP a coluna e o dado principal: mostra ha quanto tempo
-        // caiu. Fora dela o plano ja nao e 'paid', entao cairia no travessao.
+        // caiu. Fora dela o plano ja nao e 'vip', entao cairia no travessao.
         if (expiredOnly) {
           const t = u.plan_expires || u.plan_paid_at;
           if (!t) return <span style={{ color: "var(--text-dimmer)" }}>—</span>;
           return <span className="num" style={{ color: "var(--text-dim)" }}>{fmtDate(t)}</span>;
         }
-        if (u.plan !== "paid" || !u.plan_expires) return <span style={{ color: "var(--text-dimmer)" }}>—</span>;
+        if (!isVipPlan(u.plan) || !u.plan_expires) return <span style={{ color: "var(--text-dimmer)" }}>—</span>;
         const d = daysRemaining(u.plan_expires) ?? 0;
         const cor = d < 0 ? "var(--danger)" : d <= 3 ? "var(--danger)" : d <= 7 ? "var(--warning, #e0a800)" : "var(--text)";
         return <span className="num" style={{ color: cor }}>{fmtDaysRemaining(u.plan_expires)}</span>;
@@ -325,19 +325,19 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
             >
               <ExternalLink size={12} />
             </button>
-            {/* Tester tem plan="paid" no banco (o que o distingue é
+            {/* Tester tem plan="vip" no banco (o que o distingue é
                 trial_started > 0). Sem checar isTrialUser, a condição caía
-                sempre no "→ FREE" e não havia como promover um trial a
-                pagante — o único caminho era rebaixar pra free e represtar.
-                O PATCH abaixo zera trial_started no backend, então promover
-                encerra o trial e soma os dias restantes em vez de perdê-los. */}
+                sempre no "→ FREE" e não havia como promover um trial a VIP.
+                O PATCH abaixo remove o trial por completo (trial_started=0) e
+                o VIP conta 30 dias a partir de agora — os dias do trial não
+                somam (trial 13d + VIP 30 = VIP 30). */}
             {isTrialUser(u) ? (
               <>
                 <button
                   className="btn btn-sm primary"
                   disabled={busy}
-                  onClick={() => doPatch(u.user_id, { plan: "paid", plan_days: 30 }, "Promovido a VIP (30 dias)")}
-                  title="Promover trial para PAID real (+30 dias)"
+                  onClick={() => doPatch(u.user_id, { plan: "vip", plan_days: 30 }, "Trial encerrado — VIP por 30 dias")}
+                  title="Encerra o trial e dá VIP por 30 dias"
                 >
                   ⭐ VIP 30D
                 </button>
@@ -350,14 +350,14 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
                   → FREE
                 </button>
               </>
-            ) : u.plan !== "paid" ? (
+            ) : !isVipPlan(u.plan) ? (
               <button
                 className="btn btn-sm primary"
                 disabled={busy}
-                onClick={() => doPatch(u.user_id, { plan: "paid", plan_days: 30 }, "PAID 30 dias concedido")}
-                title="Dar paid 30 dias"
+                onClick={() => doPatch(u.user_id, { plan: "vip", plan_days: 30 }, "VIP de 30 dias concedido")}
+                title="Dar VIP por 30 dias"
               >
-                PAID 30D
+                VIP 30D
               </button>
             ) : (
               <button
@@ -400,7 +400,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
         <div>
           <h1 className="page-title">{expiredOnly ? "VIPs Expirados" : testersOnly ? "Usuários Testers" : vipOnly ? "Usuários VIPs" : "Usuários"}</h1>
           <div className="page-sub">
-            // {query.data?.total ?? "..."} {expiredOnly ? "ex-assinantes · pagaram e perderam o plano" : testersOnly ? "em trial (7 dias)" : vipOnly ? "PAID ativos" : "registros"} · clique pra abrir
+            // {query.data?.total ?? "..."} {expiredOnly ? "ex-assinantes · pagaram e perderam o plano" : testersOnly ? "em trial" : vipOnly ? "VIP ativos" : "registros"} · clique pra abrir
           </div>
         </div>
       </div>
@@ -418,7 +418,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
           }}
         >
           <span style={{ color: "var(--warning, #e0a800)" }}>
-            ⏳ Mostrando apenas PAID expirando nos próximos <b>{expiringDays} dias</b> (ordem: expira primeiro)
+            ⏳ Mostrando apenas VIP expirando nos próximos <b>{expiringDays} dias</b> (ordem: expira primeiro)
           </span>
           <div style={{ flex: 1 }} />
           <button className="btn btn-sm" onClick={clearExpiring}>
@@ -449,7 +449,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
             >
               <option value="">PLANO · ALL</option>
               <option value="free">FREE</option>
-              <option value="paid">PAID</option>
+              <option value="vip">VIP</option>
               <option value="trial">TRIAL</option>
             </select>
           )}
@@ -515,7 +515,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
         body={
           pendingAction?.type === "free" ? (
             <>
-              Usuário <strong>{pendingAction.user.user_id}</strong> perde o plano PAID
+              Usuário <strong>{pendingAction.user.user_id}</strong> perde o plano VIP
               imediatamente (expiração zerada).
             </>
           ) : pendingAction?.type === "ban" ? (

@@ -131,8 +131,8 @@ export function Dashboard() {
           hint="aguardando pagamento"
         />
         <StatCard
-          label="PAID ATIVOS"
-          value={statVal(s?.paid_active)}
+          label="VIP ATIVOS"
+          value={statVal(s?.vip_active)}
           raw={stats.isError}
           to="/vips"
           hint={s ? `de ${fmtNum(s.total_users)} usuários` : "..."}
@@ -146,7 +146,7 @@ export function Dashboard() {
         />
         <StatCard
           label="EXPIRANDO 7D"
-          value={statVal(s?.paid_expiring_7d)}
+          value={statVal(s?.vip_expiring_7d)}
           raw={stats.isError}
           to="/users?expiring=7"
           hint="ver quem expira"
@@ -245,7 +245,7 @@ export function Dashboard() {
                     0,
                   ) || 1;
                   const pct = ((count / total) * 100).toFixed(1);
-                  // free/trial/paid sao exatamente os valores aceitos pelo
+                  // free/trial/vip sao exatamente os valores aceitos pelo
                   // filtro `plan` de /api/users, entao da pra linkar direto.
                   const href = `/users?plan=${plan}`;
                   return (
