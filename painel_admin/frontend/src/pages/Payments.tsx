@@ -10,6 +10,23 @@ import { fmtReais, fmtDate } from "@/lib/format";
 
 const PER_PAGE = 50;
 
+// plan_key do banco -> o que o cliente comprou (engines/payment.py: get_plans)
+const PLAN_LABELS: Record<string, string> = { semanal: "15 dias", mensal: "30 dias" };
+function planLabel(key?: string): string {
+  if (!key) return "—";
+  return PLAN_LABELS[key] ?? key;
+}
+
+/** Quanto tempo o cliente levou entre gerar o PIX e pagar. */
+function timeToPay(created?: number, paid?: number): string {
+  if (!created || !paid || paid < created) return "—";
+  const s = paid - created;
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.round(s / 60)} min`;
+  if (s < 86400) return `${Math.round(s / 3600)} h`;
+  return `${Math.round(s / 86400)} d`;
+}
+
 export function Payments() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
@@ -18,38 +35,57 @@ export function Payments() {
   const q = usePayments({ status: status || undefined, page, per_page: PER_PAGE });
 
   const cols: Column<Payment>[] = [
-    { key: "id", header: "ID", render: (p) => <span className="num td-id">#{p.id}</span>, width: "80px" },
     {
       key: "user",
       primary: true,
       header: "USER",
       render: (p) => (
-        <div className="row gap-sm">
-          <IdChip value={p.user_id} />
-          <button
-            className="btn btn-sm"
-            onClick={(e) => { e.stopPropagation(); navigate(`/users/${p.user_id}`); }}
-          >
-            ABRIR
-          </button>
+        <div className="flex-col" style={{ gap: 6 }}>
+          {(p.first_name || p.username) && (
+            <span style={{ color: "var(--text)" }}>
+              {p.first_name || ""}
+              {p.username ? <span style={{ color: "var(--text-dim)" }}> @{p.username}</span> : null}
+            </span>
+          )}
+          <div className="row gap-sm">
+            <IdChip value={p.user_id} />
+            <button
+              className="btn btn-sm"
+              onClick={(e) => { e.stopPropagation(); navigate(`/users/${p.user_id}`); }}
+            >
+              ABRIR
+            </button>
+          </div>
         </div>
       ),
     },
-    { key: "amount", header: "VALOR", render: (p) => <span className="num">{fmtReais(p.amount)}</span>, numeric: true },
+    { key: "id", header: "ID", render: (p) => <span className="num td-id">#{p.id}</span>, width: "70px" },
     { key: "status", header: "STATUS", render: (p) => <StatusTag status={p.status} /> },
+    { key: "amount", header: "VALOR", render: (p) => <span className="num">{fmtReais(p.amount)}</span>, numeric: true },
+    { key: "plan", header: "PLANO", render: (p) => <span>{planLabel(p.plan_key)}</span> },
     {
       key: "created",
-      hideOnMobile: true,
       header: "CRIADO",
       render: (p) => <span className="num">{fmtDate(p.created_at)}</span>,
-      width: "150px",
+      width: "140px",
     },
     {
       key: "paid",
-      hideOnMobile: true,
       header: "PAGO",
       render: (p) => <span className="num">{p.paid_at ? fmtDate(p.paid_at) : "—"}</span>,
-      width: "150px",
+      width: "140px",
+    },
+    {
+      key: "took",
+      header: "TEMPO P/ PAGAR",
+      render: (p) => <span className="num">{timeToPay(p.created_at, p.paid_at)}</span>,
+    },
+    {
+      key: "identifier",
+      wide: true,
+      header: "ID SYNCPAY",
+      render: (p) =>
+        p.identifier ? <IdChip value={p.identifier} /> : <span style={{ color: "var(--text-dimmer)" }}>—</span>,
     },
   ];
 
@@ -109,6 +145,7 @@ export function Payments() {
           cols={cols}
           loading={q.isLoading}
           rowKey={(p) => p.id}
+          cardFieldColumns={2}
           empty="Nenhum pagamento."
         />
         <Pagination page={page} perPage={PER_PAGE} total={q.data?.total ?? 0} onPage={setPage} />

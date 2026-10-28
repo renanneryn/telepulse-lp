@@ -115,6 +115,32 @@ body::before {
   flex-shrink: 0;
 }
 
+/* Grupo recolhível (USUÁRIOS → VIPs / Trial / Expirados) */
+.nav-group { display: flex; flex-direction: column; gap: 1px; }
+.nav-group-row { position: relative; }
+.nav-group-row > .nav-item { padding-right: 40px; }
+.nav-caret {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  background: transparent;
+  border-radius: var(--radius);
+}
+.nav-caret:hover { color: var(--text); background: var(--surface-3); }
+.nav-caret svg { transition: transform 0.15s var(--ease); }
+.nav-caret.open svg { transform: rotate(180deg); }
+.nav-sub { display: flex; flex-direction: column; gap: 1px; }
+.nav-sub.closed { display: none; }
+.nav-sub .nav-item { padding-left: 34px; font-size: var(--fz-xs); }
+.nav-sub .nav-item svg { width: 14px; height: 14px; }
+
 .aside-footer {
   padding: 14px 16px;
   border-top: 1px solid var(--border);
@@ -837,6 +863,10 @@ body::before {
   .aside-footer {
     display: none;
   }
+  .nav-caret { display: none; }
+  .nav-sub.closed { display: flex; }
+  .nav-sub .nav-item { padding-left: 12px; }
+  .nav-group-row > .nav-item { padding-right: 12px; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1446,3 +1476,38 @@ input[type="checkbox"] {
   font-weight: 500;
   word-break: break-word;
 }
+
+/* ── Cartões em grade (2 ou 3 por linha no celular): rótulo em cima do valor ── */
+.card-list.grid { display: grid; gap: 8px; }
+.card-list.grid .data-card { padding: 10px; min-width: 0; }
+.card-list.grid .data-card-title { font-size: var(--fz-sm); margin-bottom: 8px; overflow-wrap: anywhere; }
+.card-list.grid .data-card-fields { gap: 8px; }
+.card-list.grid .data-card-field { flex-direction: column; align-items: flex-start; gap: 2px; }
+.card-list.grid .data-card-field dd { text-align: left; max-width: 100%; }
+.card-list.grid .data-card-actions { gap: 6px; margin-top: 10px; padding-top: 10px; }
+.card-list.grid .data-card-actions .btn { padding: 6px 8px; font-size: var(--fz-2xs); letter-spacing: 0.06em; }
+
+.cols-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  color: var(--text-dim);
+  border: 1px solid var(--border-strong);
+}
+.cols-toggle button {
+  min-width: 30px;
+  height: 30px;
+  font-family: var(--font-mono);
+  font-size: var(--fz-xs);
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+}
+.cols-toggle button.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+/* Campos do cartão em 2 colunas (Pagamentos): rótulo em cima do valor */
+.data-card-fields.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px 14px; }
+.data-card-fields.two .data-card-field { flex-direction: column; align-items: flex-start; gap: 3px; }
+.data-card-fields.two .data-card-field dd { text-align: left; max-width: 100%; }
+.data-card-fields.two .data-card-field.wide { grid-column: 1 / -1; }

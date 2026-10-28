@@ -31,6 +31,16 @@ export function fmtDate(unix: number | null | undefined): string {
   });
 }
 
+/** Só a data: 27/11/26. */
+export function fmtDay(unix: number | null | undefined): string {
+  if (!unix) return "—";
+  return new Date(unix * 1000).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  });
+}
+
 export function fmtDateShort(unix: number | null | undefined): string {
   if (!unix) return "—";
   return new Date(unix * 1000).toLocaleDateString("pt-BR", {

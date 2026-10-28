@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Download, Plug, ExternalLink, X } from "lucide-react";
+import { Search, Download, Plug, ExternalLink, X, LayoutGrid } from "lucide-react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { useUsers, usePatchUserById, useDisconnectUserById, type User, type PaginatedUsers } from "@/lib/queries";
 import { api } from "@/lib/api";
 import { DataTable, type Column } from "@/components/DataTable";
@@ -11,7 +12,7 @@ import { IdChip } from "@/components/IdChip";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePref } from "@/hooks/usePref";
-import { fmtDate, daysRemaining, fmtDaysRemaining, isTrialUser, isVipPlan } from "@/lib/format";
+import { fmtDate, fmtDay, daysRemaining, isTrialUser, isVipPlan } from "@/lib/format";
 import { toast } from "@/hooks/useToast";
 
 type SortKey =
@@ -77,6 +78,9 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
     bannedParam === "0" || bannedParam === "1" ? bannedParam : "",
   );
   const [sort, setSort] = usePref<SortKey>(`users.${_prefScope}.sort`, "created_desc");
+  // cartões por linha no celular (1, 2 ou 3) — preferência do admin, vale pra todas as abas
+  const [cardCols, setCardCols] = usePref<number>("users.cardCols", 1);
+  const isMobile = useIsMobile();
   const [exporting, setExporting] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
@@ -246,7 +250,8 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
         if (!isVipPlan(u.plan) || !u.plan_expires) return <span style={{ color: "var(--text-dimmer)" }}>—</span>;
         const d = daysRemaining(u.plan_expires) ?? 0;
         const cor = d < 0 ? "var(--danger)" : d <= 3 ? "var(--danger)" : d <= 7 ? "var(--warning, #e0a800)" : "var(--text)";
-        return <span className="num" style={{ color: cor }}>{fmtDaysRemaining(u.plan_expires)}</span>;
+        // a tag do plano já mostra os dias (VIP 30); aqui vai a data do vencimento
+        return <span className="num" style={{ color: cor }}>{fmtDay(u.plan_expires)}</span>;
       },
       width: "90px",
     },
@@ -284,8 +289,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
     },
     {
       key: "created",
-      hideOnMobile: true,
-      header: "CRIADO EM",
+      header: "ENTROU EM",
       sortKey: "created",
       render: (u) => <span className="num">{fmtDate(u.created_at)}</span>,
       width: "150px",
@@ -478,6 +482,23 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
           <button className="btn btn-sm" onClick={exportCsv} disabled={exporting} title="Exportar CSV (filtros atuais)">
             <Download size={12} /> {exporting ? "..." : "CSV"}
           </button>
+          {isMobile && (
+            <div className="cols-toggle" role="group" aria-label="Cartões por linha">
+              <LayoutGrid size={12} />
+              {[1, 2, 3].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={cardCols === n ? "on" : ""}
+                  aria-pressed={cardCols === n}
+                  title={`${n} por linha`}
+                  onClick={() => setCardCols(n)}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <DataTable
@@ -486,6 +507,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
           loading={query.isLoading}
           rowKey={(u) => u.user_id}
           onRowClick={(u) => navigate(`/users/${u.user_id}`)}
+          cardColumns={cardCols}
           empty="Nenhum usuário com esses filtros."
           sortBy={sortBy}
           sortDir={sortDir}

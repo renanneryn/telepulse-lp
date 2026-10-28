@@ -175,6 +175,10 @@ export interface Payment {
   user_id: number;
   amount: number;
   status: string;
+  plan_key?: string;
+  identifier?: string;
+  username?: string | null;
+  first_name?: string | null;
   created_at?: number;
   paid_at?: number;
   [k: string]: unknown;

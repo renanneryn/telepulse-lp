@@ -16,6 +16,8 @@ export interface Column<T> {
   hideOnMobile?: boolean;
   /** Bloco de acoes: vai por ultimo no cartao, em largura total. */
   actions?: boolean;
+  /** Com cardFieldColumns=2: o campo ocupa a linha inteira do cartao. */
+  wide?: boolean;
 }
 
 interface Props<T> {
@@ -30,10 +32,15 @@ interface Props<T> {
   sortDir?: "asc" | "desc";
   /** Clique num cabecalho ordenavel. */
   onSort?: (sortKey: string, dir: "asc" | "desc") => void;
+  /** Cartoes por linha no celular (1 = padrao). Com 2+ o cartao fica compacto
+   *  (rotulo em cima do valor); com 3 as acoes saem e ficam no detalhe. */
+  cardColumns?: number;
+  /** Campos do cartao em 2 colunas (rotulo em cima do valor) — mais dado por tela. */
+  cardFieldColumns?: 1 | 2;
 }
 
 export function DataTable<T>({
-  rows, cols, empty, loading, rowKey, onRowClick, sortBy, sortDir, onSort,
+  rows, cols, empty, loading, rowKey, onRowClick, sortBy, sortDir, onSort, cardColumns = 1, cardFieldColumns = 1,
 }: Props<T>) {
   const isMobile = useIsMobile();
 
@@ -43,12 +50,14 @@ export function DataTable<T>({
   if (isMobile) {
     const visible = cols.filter((c) => !c.hideOnMobile);
     const title = visible.find((c) => c.primary) ?? visible[0];
-    const actions = visible.filter((c) => c.actions);
+    const actions = cardColumns >= 3 ? [] : visible.filter((c) => c.actions);
+    const listClass = cardColumns > 1 ? "card-list grid" : "card-list";
+    const listStyle = cardColumns > 1 ? { gridTemplateColumns: `repeat(${cardColumns}, minmax(0, 1fr))` } : undefined;
     const fields = visible.filter((c) => c !== title && !c.actions);
 
     if (loading && rows.length === 0) {
       return (
-        <div className="card-list">
+        <div className={listClass} style={listStyle}>
           {[0, 1, 2].map((i) => (
             <div key={i} className="skeleton" style={{ height: 92 }} />
           ))}
@@ -59,7 +68,7 @@ export function DataTable<T>({
       return <div className="table-empty">{empty || "— sem registros —"}</div>;
     }
     return (
-      <div className="card-list">
+      <div className={listClass} style={listStyle}>
         {rows.map((row) => (
           <div
             key={rowKey(row)}
@@ -68,9 +77,9 @@ export function DataTable<T>({
           >
             {title && <div className="data-card-title">{title.render(row)}</div>}
             {fields.length > 0 && (
-              <dl className="data-card-fields">
+              <dl className={cardFieldColumns === 2 ? "data-card-fields two" : "data-card-fields"}>
                 {fields.map((c) => (
-                  <div key={c.key} className="data-card-field">
+                  <div key={c.key} className={c.wide ? "data-card-field wide" : "data-card-field"}>
                     <dt>{c.header}</dt>
                     <dd>{c.render(row)}</dd>
                   </div>
