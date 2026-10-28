@@ -1353,3 +1353,96 @@ input[type="checkbox"] {
     transition: none;
   }
 }
+
+/* ── Broadcast: barra de formatação, editor de botões e preview estilo Telegram ── */
+.fmt-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.fmt-btn {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: var(--fz-xs);
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+}
+.fmt-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-editor { background: var(--surface-2); border: 1px solid var(--border); padding: 12px; }
+.btn-editor-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  background: transparent;
+}
+.icon-btn:hover:not(:disabled) { color: var(--text); border-color: var(--border-strong); }
+.icon-btn.danger:hover:not(:disabled) { color: var(--danger); border-color: rgba(255, 74, 74, 0.5); }
+.icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.seg-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 8px;
+  font-family: var(--font-mono);
+  font-size: var(--fz-2xs);
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.seg-item.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+.swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.swatch {
+  padding: 9px 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fz-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 2px solid transparent;
+  background: var(--tg-key-bg);
+}
+.swatch.on { border-color: #fff; }
+
+/* cores dos botões inline do Telegram (iguais nas amostras e no preview) */
+.swatch.default, .tg-key.default { --tg-key-bg: rgba(255, 255, 255, 0.14); }
+.swatch.primary, .tg-key.primary { --tg-key-bg: #2f84d8; }
+.swatch.success, .tg-key.success { --tg-key-bg: #2e9e4f; }
+.swatch.danger,  .tg-key.danger  { --tg-key-bg: #d9433f; }
+
+.tg-chat { background: #0e1621; padding: 14px; border: 1px solid var(--border); }
+.tg-bubble {
+  max-width: 100%;
+  background: #182533;
+  color: #f1f1f1;
+  padding: 9px 12px;
+  border-radius: 12px 12px 12px 4px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.tg-text { white-space: pre-wrap; word-break: break-word; }
+.tg-text a { color: #6ab3f3; text-decoration: none; }
+.tg-text code { font-family: var(--font-mono); background: rgba(255, 255, 255, 0.1); padding: 0 4px; border-radius: 3px; }
+.tg-kb { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+.tg-key {
+  background: var(--tg-key-bg);
+  color: #fff;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  word-break: break-word;
+}

@@ -772,10 +772,30 @@ export function useDeleteFlow() {
 
 /* ──────────────  Broadcast ────────────── */
 
+/** vip30 = usuário resgata 30 dias de VIP · start = abre o menu do /start */
+export type BroadcastAction = "vip30" | "start";
+/** Cores que o Telegram suporta em botão inline (default = sem cor). */
+export type BroadcastColor = "default" | "primary" | "success" | "danger";
+
+export interface BroadcastButton {
+  text: string;
+  action: BroadcastAction;
+  color: BroadcastColor;
+}
+
 export interface BroadcastBody {
   audience: "all" | "connected" | "never_connected";
   text: string;
   parse_mode?: "html" | "markdown";
+  buttons?: BroadcastButton[];
+}
+
+/** Manda o broadcast (texto + botões) só pro admin logado. */
+export function useBroadcastTest() {
+  return useMutation({
+    mutationFn: (body: BroadcastBody) =>
+      api<{ ok: boolean }>("/api/broadcast/test", { method: "POST", body }),
+  });
 }
 
 export function useBroadcastDryRun() {

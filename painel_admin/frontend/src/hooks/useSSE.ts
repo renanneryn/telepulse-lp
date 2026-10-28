@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { apiBase, authHeaders } from "@/lib/api";
+import type { BroadcastBody } from "@/lib/queries";
 
 export interface BroadcastProgress {
   event: "start" | "progress" | "done";
@@ -22,7 +23,7 @@ export function useBroadcastStream() {
   const abortRef = useRef<AbortController | null>(null);
 
   const start = useCallback(
-    async (body: { audience: string; text: string; parse_mode?: string }) => {
+    async (body: BroadcastBody) => {
       setProgress(null);
       setError(null);
       setRunning(true);
