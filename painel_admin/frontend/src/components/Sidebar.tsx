@@ -20,6 +20,7 @@ import {
   Repeat,
   CalendarClock,
   BadgePercent,
+  Palette,
 } from "lucide-react";
 
 type Item = { to: string; label: string; icon: typeof Users; end?: boolean; group?: string };
@@ -28,12 +29,10 @@ const items: Item[] = [
   { to: "/", label: "DASHBOARD", icon: Activity, end: true },
   { to: "/funil", label: "FUNIL", icon: Filter },
   { to: "/users", label: "USUÁRIOS", icon: Users, group: "users" },
-  { to: "/trial", label: "TRIAL", icon: Gift },
+  { to: "/personalizar", label: "PERSONALIZAR", icon: Palette, group: "custom" },
   { to: "/tasks", label: "TAREFAS", icon: ListChecks, group: "tasks" },
   { to: "/payments", label: "PAGAMENTOS", icon: CreditCard },
   { to: "/broadcast", label: "BROADCAST", icon: Megaphone },
-  { to: "/texts", label: "TEXTOS", icon: FileText },
-  { to: "/flows", label: "AUTOMAÇÕES", icon: Workflow },
   { to: "/settings", label: "SETTINGS", icon: SettingsIcon },
 ];
 
@@ -46,6 +45,14 @@ const GROUPS: Record<string, { link: boolean; sub: { to: string; label: string; 
       { to: "/vips", label: "VIPS", icon: Crown },
       { to: "/testers", label: "TRIAL (TESTERS)", icon: Zap },
       { to: "/vips-expirados", label: "VIPS EXPIRADOS", icon: CrownIcon },
+      { to: "/trial", label: "TRIAL", icon: Gift },
+    ],
+  },
+  custom: {
+    link: false,
+    sub: [
+      { to: "/texts", label: "TEXTOS", icon: FileText },
+      { to: "/fluxo-inicial", label: "FLUXO INICIAL", icon: Workflow },
     ],
   },
   tasks: {

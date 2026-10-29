@@ -12,7 +12,7 @@ import { Broadcast } from "@/pages/Broadcast";
 import { Settings } from "@/pages/Settings";
 import { Trial } from "@/pages/Trial";
 import { Texts } from "@/pages/Texts";
-import { Flows } from "@/pages/Flows";
+import { StartFlow } from "@/pages/StartFlow";
 
 const qc = new QueryClient({
   defaultOptions: {
@@ -46,7 +46,8 @@ export default function App() {
             <Route path="/vips-expirados" element={<Users key="expired" expiredOnly />} />
             <Route path="/trial" element={<Trial />} />
             <Route path="/texts" element={<Texts />} />
-            <Route path="/flows" element={<Flows />} />
+            <Route path="/fluxo-inicial" element={<StartFlow />} />
+            <Route path="/flows" element={<Navigate to="/fluxo-inicial" replace />} />
             <Route path="/users/:id" element={<UserDetail />} />
             <Route path="/tasks" element={<Navigate to="/tasks/clones" replace />} />
             <Route path="/tasks/:slug" element={<TasksFromUrl />} />

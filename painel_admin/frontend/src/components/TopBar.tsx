@@ -15,7 +15,7 @@ const CRUMBS: Record<string, string> = {
   "/payments": "PAGAMENTOS",
   "/broadcast": "BROADCAST",
   "/texts": "TEXTOS",
-  "/flows": "AUTOMAÇÕES",
+  "/fluxo-inicial": "FLUXO INICIAL",
   "/settings": "SETTINGS",
 };
 

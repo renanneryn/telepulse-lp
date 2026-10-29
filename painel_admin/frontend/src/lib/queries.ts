@@ -697,101 +697,59 @@ export function useSetSettingsBulk() {
   });
 }
 
-/* ──────────────  Flows (motor de fluxos configuráveis) ────────────── */
+/* ──────────────  Fluxo Inicial (apresentação do 1º /start) ────────────── */
 
-export interface FlowOption {
-  value: string;
+export type StartFlowAction = "connect" | "info" | "url";
+export type StartFlowColor = "default" | "primary" | "success" | "danger";
+
+export interface StartFlowMessage {
+  text: string;
+  typing: number;
+}
+
+export interface StartFlowButton {
   label: string;
+  action: StartFlowAction;
+  url: string;
+  color: StartFlowColor;
 }
 
-export interface FlowButton {
-  label: string;
-  action: string;
-}
-
-export interface FlowStep {
-  id: string;
-  type: "question" | "ai_message";
-  text?: string;
-  skip_ends_flow?: boolean;
-  options?: FlowOption[];
-  system_prompt?: string;
-  fallback_step?: string;
-  fallbacks?: Record<string, string>;
-  buttons?: FlowButton[];
-}
-
-export interface FlowSummary {
-  flow_key: string;
-  name: string;
-  trigger: string;
+export interface StartFlowConfig {
   enabled: boolean;
-  step_count: number;
+  messages: StartFlowMessage[];
+  trial_text: string;
+  buttons: StartFlowButton[];
 }
 
-export interface Flow {
-  flow_key: string;
-  name: string;
-  trigger: string;
-  enabled: boolean;
-  skip_label: string;
-  steps: FlowStep[];
+export interface StartFlowData {
+  config: StartFlowConfig;
+  defaults: StartFlowConfig;
+  actions: Record<StartFlowAction, string>;
+  colors: StartFlowColor[];
+  limits: { messages: number; text: number; typing: number; buttons: number; label: number };
+  trial_days: number | null;
 }
 
-export interface FlowsMeta {
-  button_actions: Record<string, string>;
-  triggers: Record<string, string>;
-}
-
-export function useFlows() {
-  return useQuery<FlowSummary[]>({
-    queryKey: ["flows"],
-    queryFn: () => api<FlowSummary[]>("/api/flows"),
+export function useStartFlow() {
+  return useQuery<StartFlowData>({
+    queryKey: ["start-flow"],
+    queryFn: () => api("/api/start-flow"),
   });
 }
 
-export function useFlow(flowKey: string | null) {
-  return useQuery<Flow>({
-    queryKey: ["flows", flowKey],
-    queryFn: () => api<Flow>(`/api/flows/${encodeURIComponent(flowKey as string)}`),
-    enabled: !!flowKey,
-  });
-}
-
-export function useFlowsMeta() {
-  return useQuery<FlowsMeta>({
-    queryKey: ["flows-meta"],
-    queryFn: () => api<FlowsMeta>("/api/flows/meta"),
-  });
-}
-
-export function useCreateFlow() {
+export function useSaveStartFlow() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { flow_key: string; name: string; trigger: string }) =>
-      api("/api/flows", { method: "POST", body }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["flows"] }),
+    mutationFn: (config: StartFlowConfig) =>
+      api<{ ok: boolean; config: StartFlowConfig }>("/api/start-flow", { method: "PUT", body: { config } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["start-flow"] }),
   });
 }
 
-export function useSaveFlow(flowKey: string) {
-  const qc = useQueryClient();
+export function useTestStartFlow() {
   return useMutation({
-    mutationFn: (body: Omit<Flow, "flow_key">) =>
-      api(`/api/flows/${encodeURIComponent(flowKey)}`, { method: "PUT", body }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["flows"] });
-      qc.invalidateQueries({ queryKey: ["flows", flowKey] });
-    },
-  });
-}
-
-export function useDeleteFlow() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (flowKey: string) =>
-      api(`/api/flows/${encodeURIComponent(flowKey)}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["flows"] }),
+    mutationFn: (config: StartFlowConfig) =>
+      api<{ ok: boolean }>("/api/start-flow/test", { method: "POST", body: { config } }),
   });
 }
 
