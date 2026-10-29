@@ -18,7 +18,7 @@ body::before {
 /* ───── Shell ───── */
 .shell {
   display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   grid-template-rows: var(--topbar-h) 1fr;
   height: 100vh;
   overflow: hidden;
@@ -856,7 +856,7 @@ body::before {
    escondendo os textos dentro da gaveta. */
 @media (max-width: 800px) and (min-width: 641px) {
   .shell {
-    grid-template-columns: var(--sidebar-w-collapsed) 1fr;
+    grid-template-columns: var(--sidebar-w-collapsed) minmax(0, 1fr);
   }
   .brand-name,
   .nav-item span,
@@ -907,7 +907,9 @@ body::before {
 
 @media (max-width: 640px) {
   .shell {
-    grid-template-columns: 1fr;
+    /* minmax(0,…): sem isso a coluna cresce até caber o conteúdo mais largo
+       (ex.: linha de chips do detalhe do usuário) e a página toda rola de lado */
+    grid-template-columns: minmax(0, 1fr);
     /* 100dvh, não 100vh: no iOS a barra do Safari não entra na conta de vh,
        então o rodapé de toda página (paginação, barra de salvar) ficava por
        baixo dela — e como .shell é overflow:hidden, não dava pra rolar até lá. */
@@ -1511,3 +1513,116 @@ input[type="checkbox"] {
 .data-card-fields.two .data-card-field { flex-direction: column; align-items: flex-start; gap: 3px; }
 .data-card-fields.two .data-card-field dd { text-align: left; max-width: 100%; }
 .data-card-fields.two .data-card-field.wide { grid-column: 1 / -1; }
+
+/* ═══════════════════════════════════════════════
+   MOBILE FIRST — ajustes por tela (Mini App no Telegram)
+   ═══════════════════════════════════════════════ */
+/* Nada pode alargar a página: filho de grid/flex com texto longo (link, ID,
+   nome de canal) fazia a tela inteira ganhar rolagem horizontal. */
+.shell-main,
+.panel,
+.grid-2 > *,
+.grid-3 > *,
+.grid-2-wide > *,
+.grid-2-comp > *,
+.flow-layout > * { min-width: 0; }
+
+/* Textos: barra de salvar gruda no rodapé enquanto houver alteração */
+.texts-savebar { display: flex; justify-content: flex-end; }
+.texts-savebar.dirty {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  padding: 12px 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  /* cabeçalho de painel com título + botões: quebra em vez de vazar */
+  .panel-header { flex-wrap: wrap; gap: 10px; }
+  .panel-header > .row { flex-wrap: wrap; }
+
+  /* número grande dentro de meia coluna (R$ 1.199,70 cortava) */
+  /* número grande cabe em meia coluna; valor longo (R$ 1.199,70) desce mais */
+  .stat-value { font-size: 28px; }
+
+  /* abas viram grade 2×2: nenhuma fica escondida fora da tela */
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    border-bottom: none;
+    overflow: visible;
+  }
+  .tab {
+    border: 1px solid var(--border);
+    margin-bottom: 0;
+    text-align: center;
+    justify-content: center;
+  }
+  .tab.active { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* Funil: nome da etapa em cima, números embaixo */
+  .funnel-step-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .funnel-step-nums { text-align: left; }
+
+  /* Trial: dias + salvar ocupam a linha */
+  .trial-days-row { width: 100%; }
+  .trial-days-row .input { flex: 1; width: auto !important; }
+
+  /* Settings: cada chave vira um cartão (rótulo, campo na largura toda, salvar) */
+  .settings-table thead { display: none; }
+  .settings-table,
+  .settings-table tbody,
+  .settings-table tr,
+  .settings-table td { display: block; width: 100% !important; }
+  .settings-table tr { padding: 12px; border-bottom: 1px solid var(--border); }
+  .settings-table td { padding: 0; border: none !important; }
+  .settings-table td + td { margin-top: 8px; }
+  .settings-table .settings-key span { font-size: var(--fz-xs); color: var(--text-dim) !important; }
+  .settings-table .btn { width: 100%; justify-content: center; }
+
+  /* Detalhe do usuário: contadores 3 por linha, dados técnicos 2 por linha */
+  .grid-3.counter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid-3.tech-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Automações: campos da opção/botão na largura toda, ações na linha de baixo */
+  .flow-optrow { flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+  .flow-optrow > .input,
+  .flow-optrow > .select { flex: 1 1 100% !important; width: auto !important; }
+
+  .texts-savebar .btn { width: 100%; justify-content: center; }
+
+  /* linha de chips/infos abaixo do título (ID, telefone, dias): quebra */
+  .page-sub.row,
+  .page-header .row { flex-wrap: wrap; }
+
+  /* alvos de toque mínimos (~38px) */
+  .cols-toggle button { min-width: 38px; height: 38px; }
+  .link-btn { min-height: 36px; padding: 8px 0; }
+}
+
+/* valor longo no cartão de número (ex.: R$ 1.199,70) não corta: fonte menor e uma linha só */
+.stat-value { white-space: nowrap; }
+.stat-value.long { font-size: var(--fz-2xl); }
+@media (max-width: 640px) {
+  .stat-value.long { font-size: 20px; }
+}
+
+/* ── Trial: limites por recurso ── */
+.trial-rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.trial-rule { border: 1px solid var(--border); background: var(--surface); padding: 14px; min-width: 0; }
+.trial-rule.on { border-color: var(--border-hot); }
+.trial-rule-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; cursor: pointer; }
+.trial-rule-title { display: block; color: var(--text); font-weight: 600; font-size: var(--fz-sm); }
+.trial-rule-hint { display: block; color: var(--text-dimmer); font-size: var(--fz-xs); margin-top: 3px; }
+.trial-rule-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.trial-rule-unit { font-family: var(--font-mono); font-size: var(--fz-2xs); color: var(--text-dimmer); margin-top: 3px; min-height: 12px; }
+.trial-rule-off { font-family: var(--font-mono); font-size: var(--fz-2xs); color: var(--danger); margin-top: 10px; letter-spacing: 0.06em; }
+.trial-rule .switch { flex: none; }
+.texts-savebar { gap: 8px; }
+@media (max-width: 640px) {
+  .trial-rules { grid-template-columns: 1fr; }
+  .texts-savebar .btn { flex: 1; }
+}

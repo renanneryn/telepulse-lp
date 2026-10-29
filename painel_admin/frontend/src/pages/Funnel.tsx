@@ -21,11 +21,11 @@ function Step({
   return (
     <Link to={to} className="plan-row" style={{ display: "block", marginBottom: 14 }}>
       <div
-        className="between"
+        className="between funnel-step-head"
         style={{ fontFamily: "var(--font-mono)", fontSize: "var(--fz-xs)" }}
       >
         <span className="label-caps">{label}</span>
-        <span style={{ color: "var(--text-dim)" }}>
+        <span className="funnel-step-nums" style={{ color: "var(--text-dim)" }}>
           <span className="num" style={{ color: tone || "var(--text)" }}>
             {fmtNum(value)}
           </span>

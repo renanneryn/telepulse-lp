@@ -3,7 +3,9 @@ import { apiBase, authHeaders } from "@/lib/api";
 import type { BroadcastBody } from "@/lib/queries";
 
 export interface BroadcastProgress {
-  event: "start" | "progress" | "done";
+  event: "start" | "progress" | "wait" | "done";
+  /** event=wait: o Telegram pediu pausa (FloodWait) de N segundos */
+  seconds?: number;
   total: number;
   done?: number;
   sent?: number;
@@ -50,6 +52,7 @@ export function useBroadcastStream() {
           throw new Error(detail);
         }
 
+        let gotDone = false;
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buf = "";
@@ -71,6 +74,7 @@ export function useBroadcastStream() {
                 const parsed = JSON.parse(payload) as BroadcastProgress;
                 setProgress(parsed);
                 if (parsed.event === "done") {
+                  gotDone = true;
                   setRunning(false);
                 }
               } catch {
@@ -78,6 +82,14 @@ export function useBroadcastStream() {
               }
             }
           }
+        }
+        // Conexão fechou sem o evento "done" (rede/proxy caiu): o envio no
+        // servidor parou junto. Avisa em vez de parecer concluído — e sem
+        // isso o admin tendia a reenviar para quem já recebeu.
+        if (!gotDone) {
+          throw new Error(
+            "A conexão caiu antes do fim — o envio parou. Confira o progresso acima antes de reenviar (quem já recebeu receberia de novo).",
+          );
         }
       } catch (e) {
         if ((e as Error).name !== "AbortError") {

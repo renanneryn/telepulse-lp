@@ -111,12 +111,12 @@ function ClonesPanel() {
   const cols: Column<CloneTask>[] = [
     { key: "id", hideOnMobile: true, header: "ID", render: (r) => <span className="num td-id">#{r.id}</span>, width: "80px" },
     userColumn<Record<string, unknown>>(navigate),
-    { key: "label", header: "LABEL", render: (r) => String(r.label || "—") },
+    { key: "label", header: "ORIGEM → DESTINO", render: (r) => String(r.label || [r.source_name, r.target_name].filter(Boolean).join(" → ") || "—") },
     { key: "progress", header: "PROGRESSO", render: (r) => {
         const ok = (r.progress_ok as number) || 0;
         const fail = (r.progress_fail as number) || 0;
         const skip = (r.progress_skip as number) || 0;
-        const total = (r.total as number) || 0;
+        const total = (r.progress_total as number) || (r.total as number) || 0;
         const pct = total ? ((ok + fail + skip) / total) * 100 : 0;
         return (
           <div style={{ minWidth: 160 }}>
@@ -224,8 +224,12 @@ function ForwardsPanel() {
               className="btn btn-sm icon-only"
               onClick={async () => {
                 try {
-                  await start.mutateAsync(r.id);
-                  toast("ok", `Forward #${r.id} iniciado`);
+                  const res = (await start.mutateAsync(r.id)) as { ok?: boolean } | undefined;
+                  if (res && res.ok === false) {
+                    toast("err", `Forward #${r.id} não iniciou — conta desconectada ou já rodando`);
+                  } else {
+                    toast("ok", `Forward #${r.id} iniciado`);
+                  }
                 } catch (e) {
                   toast("err", (e as Error).message);
                 }

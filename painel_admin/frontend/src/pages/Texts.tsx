@@ -100,10 +100,7 @@ export function Texts() {
 
   return (
     <div>
-      <div
-        className="page-header"
-        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}
-      >
+      <div className="page-header">
         <div>
           <h1 className="page-title">Textos</h1>
           <div className="page-sub">
@@ -163,13 +160,15 @@ export function Texts() {
         </div>
       ))}
 
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      {/* com alteração pendente a barra gruda no rodapé: a página é longa e no
+          celular o botão do topo some de vista enquanto se edita */}
+      <div className={`texts-savebar${dirtyKeys.length ? " dirty" : ""}`}>
         <button
           className={`btn ${dirtyKeys.length ? "primary" : ""}`}
           onClick={saveAll}
           disabled={!dirtyKeys.length || bulk.isPending}
         >
-          <Save size={14} /> Salvar tudo
+          <Save size={14} /> Salvar tudo{dirtyKeys.length ? ` (${dirtyKeys.length})` : ""}
         </button>
       </div>
     </div>

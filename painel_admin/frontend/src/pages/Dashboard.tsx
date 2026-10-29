@@ -35,7 +35,8 @@ export function Dashboard() {
   const tsData = (ts.data?.buckets ?? []).map((v, i) => {
     const d = new Date((ts.data!.start + i * 86400) * 1000);
     return {
-      day: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+      // buckets do backend são dias UTC: formatar em UTC (senão sai 1 dia antes no Brasil)
+      day: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "UTC" }),
       value: v,
     };
   });
@@ -153,7 +154,7 @@ export function Dashboard() {
         />
       </div>
 
-      <div className="grid-2" style={{ gridTemplateColumns: "2fr 1fr" }}>
+      <div className="grid-2-wide">
         <div className="panel">
           <div className="panel-header">
             <div className="panel-title">SÉRIE TEMPORAL · {metric.toUpperCase()}</div>
@@ -247,7 +248,8 @@ export function Dashboard() {
                   const pct = ((count / total) * 100).toFixed(1);
                   // free/trial/vip sao exatamente os valores aceitos pelo
                   // filtro `plan` de /api/users, entao da pra linkar direto.
-                  const href = `/users?plan=${plan}`;
+                  // connected= vazio: todos (conectados ou não), igual à contagem ao lado
+                  const href = `/users?plan=${plan}&connected=`;
                   return (
                     <Link key={plan} to={href} className="plan-row">
                       <div className="between" style={{ fontFamily: "var(--font-mono)", fontSize: "var(--fz-xs)" }}>
@@ -280,8 +282,8 @@ export function Dashboard() {
                     className="between"
                     style={{ fontFamily: "var(--font-mono)", fontSize: "var(--fz-xs)" }}
                   >
-                    <span style={{ color: "var(--text)" }}>{r.source}</span>
-                    <span className="num" style={{ color: "var(--text-dim)" }}>
+                    <span style={{ color: "var(--text)", minWidth: 0, overflowWrap: "anywhere" }}>{r.source}</span>
+                    <span className="num" style={{ color: "var(--text-dim)", flex: "none", whiteSpace: "nowrap", marginLeft: 10 }}>
                       {fmtNum(r.click_count)} clk · {fmtNum(r.unique_users)} uniq
                     </span>
                   </div>

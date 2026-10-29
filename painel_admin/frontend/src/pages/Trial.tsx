@@ -6,6 +6,7 @@ import { fmtDaysRemaining } from "@/lib/format";
 import { Save, Gift } from "lucide-react";
 import { useSettings, useSetSetting, useUsers, type User } from "@/lib/queries";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { TrialLimitsEditor } from "@/components/TrialLimitsEditor";
 import { toast } from "@/hooks/useToast";
 
 export function Trial() {
@@ -91,11 +92,10 @@ export function Trial() {
 
       {/* Interruptor LIGA/DESLIGA */}
       <div
-        className="card"
+        className="card split-card"
         style={{
           marginBottom: 16, padding: 16, borderRadius: 10,
           border: `1px solid ${trialOn ? "var(--accent, #b8ff3d)" : "var(--border)"}`,
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}
       >
         <div>
@@ -119,10 +119,9 @@ export function Trial() {
 
       {/* Duração em dias */}
       <div
-        className="card"
+        className="card split-card"
         style={{
           padding: 16, borderRadius: 10, border: "1px solid var(--border)",
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}
       >
         <div>
@@ -131,7 +130,7 @@ export function Trial() {
             Quantos dias de Premium o usuário novo recebe. Entre 1 e 90.
           </div>
         </div>
-        <div className="row gap-sm" style={{ alignItems: "center" }}>
+        <div className="row gap-sm trial-days-row" style={{ alignItems: "center" }}>
           <input
             className="input"
             type="number"
@@ -150,6 +149,9 @@ export function Trial() {
           </button>
         </div>
       </div>
+
+      {/* O que o teste libera e até onde (core/trial_limits.py) */}
+      <TrialLimitsEditor />
 
       {/* Quem está em trial agora — a página falava de trial sem nunca mostrar
           um usuário sequer. */}

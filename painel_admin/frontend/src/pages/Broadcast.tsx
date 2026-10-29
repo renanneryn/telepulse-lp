@@ -133,6 +133,8 @@ export function Broadcast() {
 
   async function runSend() {
     setConfirmSend(false);
+    // um dry-run vale para UM envio: terminado ou parado, ENVIAR trava de novo
+    setDryRunKey(null);
     await stream.start(body);
   }
 
@@ -475,6 +477,11 @@ export function Broadcast() {
                   <ProgressCell label="BLOCKED" value={progress.blocked ?? 0} tone="dim" />
                   <ProgressCell label="FAILED" value={progress.failed ?? 0} tone="danger" />
                 </div>
+                {progress.event === "wait" && stream.running && (
+                  <div className="label-caps" style={{ marginTop: 12, color: "var(--accent-2)" }}>
+                    ⏳ o Telegram pediu uma pausa de {progress.seconds}s — o envio continua sozinho
+                  </div>
+                )}
                 {progress.event === "done" && (
                   <div
                     className="row gap-sm"

@@ -34,9 +34,9 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/funil" element={<Funnel />} />
             <Route path="/users" element={<UsersFromUrl />} />
-            <Route path="/vips" element={<Users vipOnly />} />
-            <Route path="/testers" element={<Users testersOnly />} />
-            <Route path="/vips-expirados" element={<Users expiredOnly />} />
+            <Route path="/vips" element={<Users key="vips" vipOnly />} />
+            <Route path="/testers" element={<Users key="testers" testersOnly />} />
+            <Route path="/vips-expirados" element={<Users key="expired" expiredOnly />} />
             <Route path="/trial" element={<Trial />} />
             <Route path="/texts" element={<Texts />} />
             <Route path="/flows" element={<Flows />} />

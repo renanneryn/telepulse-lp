@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Download, Plug, ExternalLink, X, LayoutGrid } from "lucide-react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -73,6 +73,19 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
       ? connParam
       : (vipOnly || testersOnly || expiredOnly ? "" : "1"),
   );
+  // Link vindo do Dashboard/Funil (?plan= / ?connected=) manda no filtro: o
+  // usePref só usa o valor inicial quando não há nada salvo, então depois da
+  // 1ª visita o link abria com o último filtro usado em vez do segmento clicado.
+  useEffect(() => {
+    if (searchParams.has("plan")) {
+      setPlan(["free", "vip", "trial"].includes(planParam) ? planParam : planParam === "paid" ? "vip" : "");
+    }
+    if (connParam !== null && (connParam === "0" || connParam === "1" || connParam === "")) {
+      setConnected(connParam);
+    }
+    // só na montagem: UsersFromUrl remonta a cada mudança de URL
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const bannedParam = searchParams.get("banned");
   const [banned, setBanned] = useState(
     bannedParam === "0" || bannedParam === "1" ? bannedParam : "",
@@ -354,7 +367,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
                   → FREE
                 </button>
               </>
-            ) : !isVipPlan(u.plan) ? (
+            ) : !isVipPlan(u.plan) || !u.plan_expires || u.plan_expires * 1000 <= Date.now() ? (
               <button
                 className="btn btn-sm primary"
                 disabled={busy}

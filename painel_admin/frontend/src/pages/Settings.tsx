@@ -107,11 +107,10 @@ export function Settings() {
       </div>
 
       <div
-        className="card"
+        className="card split-card"
         style={{
           marginBottom: 16, padding: 16, borderRadius: 10,
           border: `1px solid ${lockdownOn ? "var(--danger)" : "var(--border)"}`,
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}
       >
         <div>
@@ -137,11 +136,10 @@ export function Settings() {
           e descongela os planos pagos, somando de volta o tempo em que o bot
           ficou liberado. Gravar a setting direto faria assinante perder dias. */}
       <div
-        className="card"
+        className="card split-card"
         style={{
           marginBottom: 16, padding: 16, borderRadius: 10,
           border: `1px solid ${freeMode ? "var(--accent)" : "var(--border)"}`,
-          display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
         }}
       >
         <div>
@@ -164,7 +162,7 @@ export function Settings() {
       </div>
 
       <div className="table-wrap">
-        <table className="table">
+        <table className="table settings-table">
           <thead>
             <tr>
               <th style={{ width: "30%" }}>KEY</th>
@@ -183,10 +181,11 @@ export function Settings() {
             {entries.map(([key, value]) => {
               const v = edited[key] ?? value;
               const dirty = edited[key] !== undefined && edited[key] !== value;
-              const isLong = (v?.length ?? 0) > 80;
+              // texto (não número/flag) ganha caixa de várias linhas: no celular um input de uma linha corta tudo
+              const isLong = (v?.length ?? 0) > 24 || (v ?? "").includes("\n");
               return (
                 <tr key={key}>
-                  <td>
+                  <td className="settings-key">
                     <span style={{ color: "var(--text)", fontFamily: "var(--font-mono)" }}>{key}</span>
                   </td>
                   <td>

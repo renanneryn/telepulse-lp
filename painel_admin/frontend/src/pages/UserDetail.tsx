@@ -62,7 +62,13 @@ export function UserDetail() {
 
   async function taskAction(fn: () => Promise<unknown>, okMsg: string) {
     try {
-      await fn();
+      const res = (await fn()) as { ok?: boolean } | undefined;
+      // start de forward responde 200 {ok:false} quando não iniciou
+      if (res && typeof res === "object" && res.ok === false) {
+        toast("err", "Não iniciou — conta desconectada ou já rodando");
+        detail.refetch?.();
+        return;
+      }
       toast("ok", okMsg);
       detail.refetch?.();
     } catch (e) {
@@ -384,7 +390,7 @@ export function UserDetail() {
           <div className="panel-header">
             <div className="panel-title">CONTADORES</div>
           </div>
-          <div className="grid-3" style={{ gap: 12 }}>
+          <div className="grid-3 counter-grid" style={{ gap: 12 }}>
             <Counter label="CLONES" value={counts.clone_tasks} />
             <Counter label="FORWARDS" value={counts.forward_tasks} />
             <Counter label="ENC" value={counts.enc_tasks} />
@@ -400,7 +406,7 @@ export function UserDetail() {
         <div className="panel-header">
           <div className="panel-title">DADOS TÉCNICOS</div>
         </div>
-        <div className="grid-3" style={{ gap: 12, fontSize: "var(--fz-sm)" }}>
+        <div className="grid-3 tech-grid" style={{ gap: 12, fontSize: "var(--fz-sm)" }}>
           <TechField label="DISPOSITIVO" value={String(user.device_model || "—")} />
           <TechField label="SISTEMA" value={String(user.system_version || "—")} />
           <TechField label="APP" value={String(user.app_version || "—")} />
@@ -421,7 +427,7 @@ export function UserDetail() {
           <MiniList
             rows={clone_tasks.slice(0, 8).map((c) => ({
               left: <span className="num td-id">#{String(c.id)}</span>,
-              mid: String(c.label ?? "—"),
+              mid: String(c.label || [c.source_name, c.target_name].filter(Boolean).join(" → ") || "—"),
               right: (
                 <div className="row gap-sm">
                   <StatusTag status={String(c.status)} />
@@ -662,7 +668,7 @@ export function UserDetail() {
                 fontSize: "var(--fz-sm)",
               }}
             >
-              <div style={{ flex: 1, display: "flex", gap: 12, alignItems: "center" }}>
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexWrap: "wrap", gap: "6px 12px", alignItems: "center", overflowWrap: "anywhere" }}>
                 <Tag>{r.rule_type.toUpperCase()}</Tag>
                 <span style={{ color: "var(--text-dim)" }}>{r.task_label}</span>
                 <span style={{ color: "var(--text)" }}>{r.rule_label}</span>
@@ -869,7 +875,7 @@ function PriceEditor({
     >
       <div className="input-row">
         <div className="input-group">
-          <label className="input-label">SEMANAL (centavos)</label>
+          <label className="input-label">SEMANAL (R$ inteiros · 0 = padrão)</label>
           <input
             className="input num"
             type="number"
@@ -879,7 +885,7 @@ function PriceEditor({
           />
         </div>
         <div className="input-group">
-          <label className="input-label">MENSAL (centavos)</label>
+          <label className="input-label">MENSAL (R$ inteiros · 0 = padrão)</label>
           <input
             className="input num"
             type="number"
@@ -918,10 +924,11 @@ function epochToDateInput(epoch: number | undefined | null): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// "YYYY-MM-DD" -> epoch (segundos), no início do dia local
-function dateInputToEpoch(s: string): number | undefined {
+// "YYYY-MM-DD" -> epoch (segundos) no início do dia local — ou no FIM do dia
+// (endOfDay), que é o que se espera de "expira em DD/MM": vale o dia inteiro
+function dateInputToEpoch(s: string, endOfDay = false): number | undefined {
   if (!s) return undefined;
-  const d = new Date(s + "T00:00:00");
+  const d = new Date(s + (endOfDay ? "T23:59:59" : "T00:00:00"));
   if (Number.isNaN(d.getTime())) return undefined;
   return Math.floor(d.getTime() / 1000);
 }
@@ -1005,8 +1012,14 @@ function PlanEditor({
       plan_expires?: number;
     } = { plan };
     if (plan === "vip") {
-      payload.plan_paid_at = dateInputToEpoch(paidAt);
-      payload.plan_expires = dateInputToEpoch(expires);
+      // data não mexida = mantém o horário original (o campo só tem o dia; antes
+      // salvar cortava pra 00:00 e quem vencia hoje às 18h perdia o VIP na hora)
+      payload.plan_paid_at =
+        paidAt === epochToDateInput(user.plan_paid_at) && user.plan_paid_at ? user.plan_paid_at : dateInputToEpoch(paidAt);
+      payload.plan_expires =
+        expires === epochToDateInput(user.plan_expires) && user.plan_expires
+          ? user.plan_expires
+          : dateInputToEpoch(expires, true);
       if (!payload.plan_expires) {
         toast("err", "Defina a data de expiração para o plano VIP.");
         return;

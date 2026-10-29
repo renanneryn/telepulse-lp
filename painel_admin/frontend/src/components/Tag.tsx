@@ -27,8 +27,9 @@ export function PlanTag({
   if (isTrial) return <Tag tone="info">TRIAL</Tag>;
   if (isVipPlan(plan)) {
     const d = daysRemaining(expires);
-    if (d !== null && d < 0) return <Tag tone="danger">EXPIRED</Tag>;
-    return <Tag tone="accent">{d === null ? "VIP" : `VIP ${d}`}</Tag>;
+    // sem data (0) = vencido para o bot (get_plan); não mostrar como VIP ativo
+    if (d === null || d < 0) return <Tag tone="danger">EXPIRED</Tag>;
+    return <Tag tone="accent">{`VIP ${d}`}</Tag>;
   }
   if ((plan || "").toLowerCase() === "expired") return <Tag tone="danger">EXPIRED</Tag>;
   return <Tag>FREE</Tag>;

@@ -5,14 +5,15 @@
  */
 export type ParseMode = "html" | "markdown";
 
-const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const esc = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export function renderTelegramPreview(text: string, mode: ParseMode): string {
   let h = esc(text);
   if (mode === "html") {
     h = h
       .replace(/&lt;(\/?)(b|strong|i|em|u|ins|s|strike|del|code|pre)&gt;/gi, "<$1$2>")
-      .replace(/&lt;a\s+href="(https?:\/\/[^"<>\s]+)"&gt;/gi, '<a href="$1" target="_blank" rel="noreferrer">')
+      .replace(/&lt;a\s+href=&quot;(https?:\/\/[^"<>\s&]+(?:&amp;[^"<>\s&]+)*)&quot;&gt;/gi, '<a href="$1" target="_blank" rel="noreferrer">')
       .replace(/&lt;\/a&gt;/gi, "</a>");
   } else {
     h = h

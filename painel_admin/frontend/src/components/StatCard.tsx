@@ -17,7 +17,7 @@ export function StatCard({ label, value, delta, hint, raw, to }: Props) {
   const inner = (
     <>
       <div className="stat-label">{label}</div>
-      <div className="stat-value">{display}</div>
+      <div className={String(display).length > 8 ? "stat-value long" : "stat-value"}>{display}</div>
       {(delta || hint) && (
         <div className="stat-meta">
           {delta}

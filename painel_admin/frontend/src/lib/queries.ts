@@ -811,3 +811,27 @@ export function useBroadcastDryRun() {
       }),
   });
 }
+
+/* ──────────────  Limites do trial ────────────── */
+
+/** Um recurso do trial: liga/desliga + limites (0 = sem limite). */
+export type TrialRule = { on: boolean } & Partial<
+  Record<"max_media" | "max_clones" | "max_media_per_topic" | "max_topics" | "max_tasks", number>
+>;
+export type TrialLimits = Record<string, TrialRule>;
+
+export function useTrialLimits() {
+  return useQuery<{ limits: TrialLimits; defaults: TrialLimits }>({
+    queryKey: ["trial-limits"],
+    queryFn: () => api("/api/trial-limits"),
+  });
+}
+
+export function useSaveTrialLimits() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (limits: TrialLimits) =>
+      api<{ ok: boolean; limits: TrialLimits }>("/api/trial-limits", { method: "PUT", body: { limits } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["trial-limits"] }),
+  });
+}
