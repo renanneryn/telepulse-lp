@@ -23,7 +23,7 @@ const GROUPS: { title: string; items: { key: string; label: string; hint: string
       { key: "clone_restricted", label: "Canal / grupo trancado", hint: "origem com proteção (encaminhar bloqueado)" },
       { key: "clone_topics", label: "Supergrupo com tópicos — aberto", hint: "tópicos específicos, tudo num destino ou recriar" },
       { key: "clone_topics_restricted", label: "Supergrupo com tópicos — trancado", hint: "mesmos modos, com proteção de conteúdo" },
-      { key: "recreate_supergroup", label: "Recriar supergrupo", hint: "\"Recriar SuperGrupo do 0\" e \"Recriar no meu grupo\"" },
+      { key: "recreate_supergroup", label: "Recriar supergrupo", hint: "\"Recriar SuperGrupo do 0\" e \"Recriar no meu grupo\" · mídias por tópico 0 = usa o limite do supergrupo acima" },
     ],
   },
   {
@@ -114,7 +114,11 @@ export function TrialLimitsEditor() {
                               patch(it.key, { [f]: n } as Partial<TrialRule>);
                             }}
                           />
-                          <div className="trial-rule-unit">{(r[f] ?? 0) === 0 ? "sem limite" : ""}</div>
+                          <div className="trial-rule-unit">
+                            {(r[f] ?? 0) === 0
+                              ? it.key === "recreate_supergroup" ? "usa o do supergrupo" : "sem limite"
+                              : ""}
+                          </div>
                         </div>
                       ))}
                     </div>
