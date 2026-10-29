@@ -265,11 +265,32 @@ export function useStats() {
   });
 }
 
-export function useTimeseries(metric: "signups" | "clones" | "payments", days = 30) {
+/** Fuso do navegador em minutos (Brasil = -180): os dias viram à meia-noite local. */
+const TZ_OFFSET_MIN = -new Date().getTimezoneOffset();
+
+export type TsMetric = "signups" | "connects" | "clones" | "payments";
+
+export function useTimeseries(metric: TsMetric, days = 30, enabled = true) {
   return useQuery<{ metric: string; days: number; start: number; buckets: number[] }>({
     queryKey: ["timeseries", metric, days],
     queryFn: () =>
-      api("/api/stats/timeseries", { query: { metric, days } }),
+      api("/api/stats/timeseries", { query: { metric, days, tz_offset_min: TZ_OFFSET_MIN } }),
+    enabled,
+  });
+}
+
+/** Deram /start × conectaram a conta: hoje, 7d e 30d (+ conversão %). */
+export interface Acquisition {
+  start_today: number; start_7d: number; start_30d: number;
+  conn_today: number; conn_7d: number; conn_30d: number;
+  conv_today: number; conv_7d: number; conv_30d: number;
+}
+
+export function useAcquisition() {
+  return useQuery<Acquisition>({
+    queryKey: ["acquisition"],
+    queryFn: () => api("/api/stats/acquisition", { query: { tz_offset_min: TZ_OFFSET_MIN } }),
+    refetchInterval: 30_000,
   });
 }
 

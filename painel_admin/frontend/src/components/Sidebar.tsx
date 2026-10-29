@@ -17,15 +17,19 @@ import {
   Rocket,
   Settings as SettingsIcon,
   ChevronDown,
+  Repeat,
+  CalendarClock,
+  BadgePercent,
 } from "lucide-react";
 
-const items = [
+type Item = { to: string; label: string; icon: typeof Users; end?: boolean; group?: string };
+
+const items: Item[] = [
   { to: "/", label: "DASHBOARD", icon: Activity, end: true },
   { to: "/funil", label: "FUNIL", icon: Filter },
-  { to: "/users", label: "USUÁRIOS", icon: Users, group: true },
+  { to: "/users", label: "USUÁRIOS", icon: Users, group: "users" },
   { to: "/trial", label: "TRIAL", icon: Gift },
-  { to: "/tasks", label: "TAREFAS", icon: ListChecks },
-  { to: "/clones", label: "CLONES", icon: Rocket },
+  { to: "/tasks", label: "TAREFAS", icon: ListChecks, group: "tasks" },
   { to: "/payments", label: "PAGAMENTOS", icon: CreditCard },
   { to: "/broadcast", label: "BROADCAST", icon: Megaphone },
   { to: "/texts", label: "TEXTOS", icon: FileText },
@@ -33,22 +37,84 @@ const items = [
   { to: "/settings", label: "SETTINGS", icon: SettingsIcon },
 ];
 
-// Subabas de USUÁRIOS (recolhíveis)
-const userSubItems = [
-  { to: "/vips", label: "VIPS", icon: Crown },
-  { to: "/testers", label: "TRIAL (TESTERS)", icon: Zap },
-  { to: "/vips-expirados", label: "VIPS EXPIRADOS", icon: CrownIcon },
-];
+// Subabas recolhíveis de cada grupo. `link` = o título do grupo também abre
+// uma tela (Usuários abre a lista geral); sem isso o título só abre/fecha.
+const GROUPS: Record<string, { link: boolean; sub: { to: string; label: string; icon: typeof Users }[] }> = {
+  users: {
+    link: true,
+    sub: [
+      { to: "/vips", label: "VIPS", icon: Crown },
+      { to: "/testers", label: "TRIAL (TESTERS)", icon: Zap },
+      { to: "/vips-expirados", label: "VIPS EXPIRADOS", icon: CrownIcon },
+    ],
+  },
+  tasks: {
+    link: false,
+    sub: [
+      { to: "/tasks/clones", label: "CLONE", icon: Rocket },
+      { to: "/tasks/espelhar", label: "ESPELHAR", icon: Repeat },
+      { to: "/tasks/agendar", label: "AGENDAR POSTS", icon: CalendarClock },
+      { to: "/tasks/ofertas", label: "OFERTAS ROTATIVAS", icon: BadgePercent },
+    ],
+  },
+};
 
-export function Sidebar() {
+function NavGroup({ item }: { item: Item }) {
   const location = useLocation();
-  const [usersOpen, setUsersOpen] = usePref<boolean>("nav.usersOpen", false);
-  const subActive = userSubItems.some((i) => location.pathname.startsWith(i.to));
+  const g = GROUPS[item.group as string];
+  const [open, setOpen] = usePref<boolean>(`nav.${item.group}Open`, false);
+  const subActive = g.sub.some((i) => location.pathname.startsWith(i.to));
   // abriu numa subaba (link direto, reload): o grupo aparece aberto
   useEffect(() => {
-    if (subActive) setUsersOpen(true);
-  }, [subActive, setUsersOpen]);
+    if (subActive) setOpen(true);
+  }, [subActive, setOpen]);
+  const Icon = item.icon;
+  const subId = `nav-${item.group}-sub`;
 
+  return (
+    <div className="nav-group">
+      <div className="nav-group-row">
+        {g.link ? (
+          <NavLink to={item.to} end={item.end} className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+            <Icon size={16} />
+            <span>{item.label}</span>
+          </NavLink>
+        ) : (
+          <button
+            type="button"
+            className={"nav-item nav-group-toggle" + (subActive && !open ? " active" : "")}
+            aria-expanded={open}
+            aria-controls={subId}
+            onClick={() => setOpen(!open)}
+          >
+            <Icon size={16} />
+            <span>{item.label}</span>
+          </button>
+        )}
+        <button
+          type="button"
+          className={"nav-caret" + (open ? " open" : "")}
+          aria-expanded={open}
+          aria-controls={subId}
+          title={open ? "Recolher" : "Expandir"}
+          onClick={() => setOpen(!open)}
+        >
+          <ChevronDown size={14} />
+        </button>
+      </div>
+      <div id={subId} className={"nav-sub" + (open ? "" : " closed")}>
+        {g.sub.map(({ to, label, icon: SubIcon }) => (
+          <NavLink key={to} to={to} className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}>
+            <SubIcon size={14} />
+            <span>{label}</span>
+          </NavLink>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function Sidebar() {
   return (
     <aside className="shell-aside" id="app-nav">
       <div className="brand">
@@ -68,51 +134,18 @@ export function Sidebar() {
 
       <nav className="nav">
         <div className="nav-section label-caps">// nav</div>
-        {items.map(({ to, label, icon: Icon, end, group }) =>
-          group ? (
-            <div key={to} className="nav-group">
-              <div className="nav-group-row">
-                <NavLink
-                  to={to}
-                  end={end}
-                  className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}
-                >
-                  <Icon size={16} />
-                  <span>{label}</span>
-                </NavLink>
-                <button
-                  type="button"
-                  className={"nav-caret" + (usersOpen ? " open" : "")}
-                  aria-expanded={usersOpen}
-                  aria-controls="nav-users-sub"
-                  title={usersOpen ? "Recolher" : "Expandir"}
-                  onClick={() => setUsersOpen(!usersOpen)}
-                >
-                  <ChevronDown size={14} />
-                </button>
-              </div>
-              <div id="nav-users-sub" className={"nav-sub" + (usersOpen ? "" : " closed")}>
-                {userSubItems.map(({ to: subTo, label: subLabel, icon: SubIcon }) => (
-                  <NavLink
-                    key={subTo}
-                    to={subTo}
-                    className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}
-                  >
-                    <SubIcon size={14} />
-                    <span>{subLabel}</span>
-                  </NavLink>
-                ))}
-              </div>
-            </div>
+        {items.map((item) =>
+          item.group ? (
+            <NavGroup key={item.to} item={item} />
           ) : (
             <NavLink
-              key={to}
-              to={to}
-              end={end}
+              key={item.to}
+              to={item.to}
+              end={item.end}
               className={({ isActive }) => (isActive ? "nav-item active" : "nav-item")}
             >
-              <Icon size={16} />
-              <span>{label}</span>
+              <item.icon size={16} />
+              <span>{item.label}</span>
             </NavLink>
           ),
         )}

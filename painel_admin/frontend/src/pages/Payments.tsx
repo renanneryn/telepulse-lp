@@ -6,6 +6,8 @@ import { StatCard } from "@/components/StatCard";
 import { StatusTag } from "@/components/Tag";
 import { IdChip } from "@/components/IdChip";
 import { Pagination } from "@/components/Pagination";
+import { CardColsToggle } from "@/components/CardColsToggle";
+import { usePref } from "@/hooks/usePref";
 import { fmtReais, fmtDate } from "@/lib/format";
 
 const PER_PAGE = 50;
@@ -31,6 +33,8 @@ export function Payments() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(0);
+  // cartões por linha no celular (1, 2 ou 3) — preferência do admin
+  const [cardCols, setCardCols] = usePref<number>("payments.cardCols", 1);
   const summary = usePaymentsSummary();
   const q = usePayments({ status: status || undefined, page, per_page: PER_PAGE });
 
@@ -48,7 +52,7 @@ export function Payments() {
             </span>
           )}
           <div className="row gap-sm">
-            <IdChip value={p.user_id} />
+            <IdChip value={p.user_id} full={cardCols === 1} />
             <button
               className="btn btn-sm"
               onClick={(e) => { e.stopPropagation(); navigate(`/users/${p.user_id}`); }}
@@ -85,7 +89,7 @@ export function Payments() {
       wide: true,
       header: "ID SYNCPAY",
       render: (p) =>
-        p.identifier ? <IdChip value={p.identifier} /> : <span style={{ color: "var(--text-dimmer)" }}>—</span>,
+        p.identifier ? <IdChip value={p.identifier} full={cardCols === 1} /> : <span style={{ color: "var(--text-dimmer)" }}>—</span>,
     },
   ];
 
@@ -139,13 +143,17 @@ export function Payments() {
             <option value="expired">EXPIRED</option>
             <option value="cancelled">CANCELLED</option>
           </select>
+          <CardColsToggle value={cardCols} onChange={setCardCols} />
         </div>
         <DataTable
           rows={q.data?.items ?? []}
           cols={cols}
           loading={q.isLoading}
           rowKey={(p) => p.id}
-          cardFieldColumns={2}
+          cardColumns={cardCols}
+          // 1 cartão por linha: campos em 2 colunas; com 2-3 cartões o cartão
+          // fica estreito e os campos voltam a empilhar
+          cardFieldColumns={cardCols === 1 ? 2 : 1}
           empty="Nenhum pagamento."
         />
         <Pagination page={page} perPage={PER_PAGE} total={q.data?.total ?? 0} onPage={setPage} />

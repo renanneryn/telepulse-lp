@@ -2,6 +2,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -9,23 +10,37 @@ import {
 } from "recharts";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useStats, useTimeseries, usePlanDist, useTopRefs, usePaymentsSummary } from "@/lib/queries";
+import { useStats, useTimeseries, usePlanDist, useTopRefs, usePaymentsSummary, useAcquisition, type TsMetric } from "@/lib/queries";
 import { StatCard } from "@/components/StatCard";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { fmtNum, fmtReais } from "@/lib/format";
 import { PulseDot } from "@/components/PulseDot";
 
-const METRICS: Array<{ key: "signups" | "clones" | "payments"; label: string }> = [
-  { key: "signups", label: "SIGNUPS" },
+// "funnel" = duas linhas no mesmo gráfico: deram /start × conectaram a conta
+type ChartMetric = TsMetric | "funnel";
+const METRICS: Array<{ key: ChartMetric; label: string }> = [
+  { key: "funnel", label: "START × CONECTOU" },
+  { key: "signups", label: "/START" },
+  { key: "connects", label: "CONEXÕES" },
   { key: "clones", label: "CLONES" },
   { key: "payments", label: "PAGAMENTOS" },
 ];
+const METRIC_TITLE: Record<ChartMetric, string> = {
+  funnel: "DERAM /START × CONECTARAM",
+  signups: "DERAM /START",
+  connects: "CONECTARAM A CONTA",
+  clones: "CLONES",
+  payments: "PAGAMENTOS",
+};
 
 export function Dashboard() {
   const stats = useStats();
-  const [metric, setMetric] = useState<"signups" | "clones" | "payments">("signups");
+  const [metric, setMetric] = useState<ChartMetric>("funnel");
   const [days, setDays] = useState(30);
-  const ts = useTimeseries(metric, days);
+  const funnel = metric === "funnel";
+  const ts = useTimeseries(funnel ? "signups" : metric, days);
+  const ts2 = useTimeseries("connects", days, funnel);   // 2ª linha (conexões) só no modo funil
+  const acq = useAcquisition();
   const planDist = usePlanDist();
   const topRefs = useTopRefs(8);
   const paySummary = usePaymentsSummary();
@@ -33,13 +48,20 @@ export function Dashboard() {
   const s = stats.data;
   const pay = paySummary.data;
   const tsData = (ts.data?.buckets ?? []).map((v, i) => {
+    // buckets começam à meia-noite do fuso do navegador (tz_offset_min)
     const d = new Date((ts.data!.start + i * 86400) * 1000);
     return {
-      // buckets do backend são dias UTC: formatar em UTC (senão sai 1 dia antes no Brasil)
-      day: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", timeZone: "UTC" }),
+      day: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
       value: v,
+      value2: ts2.data?.buckets?.[i] ?? 0,
     };
   });
+  const a = acq.data;
+  function acqVal(v: number | undefined): number | string {
+    if (acq.isError) return "—";
+    if (acq.isLoading) return "...";
+    return v ?? 0;
+  }
 
   // M13: nunca renderizar zero como se fosse um valor real quando a request
   // falhou — mostra "—" em vez de um card "saudável" com dado falso.
@@ -85,6 +107,37 @@ export function Dashboard() {
           onRetry={() => stats.refetch()}
         />
       )}
+
+      {/* Aquisição: quem deu /start e quem conectou a conta (com conversão) */}
+      <div className="label-caps" style={{ margin: "0 0 8px", color: "var(--text-dim)" }}>AQUISIÇÃO</div>
+      <div className="stats-grid" style={{ marginBottom: 18 }}>
+        <StatCard
+          label="/START HOJE"
+          value={acqVal(a?.start_today)}
+          hint={a ? `${fmtNum(a.start_7d)} em 7d · ${fmtNum(a.start_30d)} em 30d` : undefined}
+          raw={acq.isError || acq.isLoading}
+          to="/users?connected="
+        />
+        <StatCard
+          label="CONECTARAM HOJE"
+          value={acqVal(a?.conn_today)}
+          hint={a ? `${fmtNum(a.conn_7d)} em 7d · ${fmtNum(a.conn_30d)} em 30d` : undefined}
+          raw={acq.isError || acq.isLoading}
+          to="/users?connected=1"
+        />
+        <StatCard
+          label="CONVERSÃO 7D"
+          value={a ? `${a.conv_7d}%` : acqVal(undefined)}
+          hint="dos que deram /start, conectaram"
+          raw
+        />
+        <StatCard
+          label="CONVERSÃO 30D"
+          value={a ? `${a.conv_30d}%` : acqVal(undefined)}
+          hint={a ? `hoje: ${a.conv_today}%` : undefined}
+          raw
+        />
+      </div>
 
       <div className="stats-grid">
         <StatCard
@@ -157,7 +210,7 @@ export function Dashboard() {
       <div className="grid-2-wide">
         <div className="panel">
           <div className="panel-header">
-            <div className="panel-title">SÉRIE TEMPORAL · {metric.toUpperCase()}</div>
+            <div className="panel-title">SÉRIE TEMPORAL · {METRIC_TITLE[metric]}</div>
             <div className="row gap-sm">
               {METRICS.map((m) => (
                 <button
@@ -195,6 +248,10 @@ export function Dashboard() {
                       <stop offset="0%" stopColor="#b8ff3d" stopOpacity={0.35} />
                       <stop offset="100%" stopColor="#b8ff3d" stopOpacity={0} />
                     </linearGradient>
+                    <linearGradient id="info" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#4ab8ff" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#4ab8ff" stopOpacity={0} />
+                    </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="2 4" stroke="rgba(255,255,255,0.05)" />
                   <XAxis
@@ -223,10 +280,29 @@ export function Dashboard() {
                   <Area
                     type="monotone"
                     dataKey="value"
+                    name={funnel ? "deram /start" : METRIC_TITLE[metric].toLowerCase()}
                     stroke="#b8ff3d"
                     strokeWidth={1.6}
                     fill="url(#acid)"
                   />
+                  {funnel && (
+                    <Area
+                      type="monotone"
+                      dataKey="value2"
+                      name="conectaram"
+                      stroke="#4ab8ff"
+                      strokeWidth={1.6}
+                      fill="url(#info)"
+                    />
+                  )}
+                  {funnel && (
+                    <Legend
+                      verticalAlign="top"
+                      height={24}
+                      iconType="plainline"
+                      wrapperStyle={{ fontFamily: "JetBrains Mono", fontSize: 10, letterSpacing: "0.08em", color: "#8a8a92" }}
+                    />
+                  )}
                 </AreaChart>
               </ResponsiveContainer>
             </div>

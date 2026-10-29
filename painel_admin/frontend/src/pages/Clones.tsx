@@ -6,7 +6,9 @@ import { IdChip } from "@/components/IdChip";
 import { StatCard } from "@/components/StatCard";
 import { fmtNum } from "@/lib/format";
 
-export function Clones() {
+/** Clones rodando/na fila agora (estado em memória do bot). Fica dentro de
+ *  TAREFAS › CLONE, acima do histórico. */
+export function LiveClones() {
   const navigate = useNavigate();
   const q = useActiveClones();
   const summary = q.data?.summary;
@@ -54,17 +56,11 @@ export function Clones() {
 
   return (
     <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Clones ao vivo</h1>
-          <div className="page-sub">// estado em memória do bot · auto-refresh ativo</div>
-        </div>
-      </div>
-
-      <div className="row gap-sm" style={{ marginBottom: 16, flexWrap: "wrap" }}>
-        <StatCard label="TETO GLOBAL" value={summary?.max_concurrent ?? 0} />
-        <StatCard label="RODANDO" value={summary?.running ?? 0} hint={summary ? `de ${summary.max_concurrent}` : undefined} />
-        <StatCard label="AGUARDANDO" value={summary?.waiting ?? 0} />
+      <div className="label-caps" style={{ margin: "0 0 8px", color: "var(--text-dim)" }}>AO VIVO</div>
+      <div className="stats-grid stats-grid-3" style={{ marginBottom: 12 }}>
+        <StatCard label="RODANDO" value={summary?.running ?? 0} hint={summary ? `de ${summary.max_concurrent} (teto)` : undefined} />
+        <StatCard label="AGUARDANDO" value={summary?.waiting ?? 0} hint="na fila" />
+        <StatCard label="TETO GLOBAL" value={summary?.max_concurrent ?? 0} hint="clones ao mesmo tempo" />
       </div>
 
       <DataTable

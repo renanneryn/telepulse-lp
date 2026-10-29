@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search, Download, Plug, ExternalLink, X, LayoutGrid } from "lucide-react";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { Search, Download, Plug, ExternalLink, X } from "lucide-react";
+import { CardColsToggle } from "@/components/CardColsToggle";
 import { useUsers, usePatchUserById, useDisconnectUserById, type User, type PaginatedUsers } from "@/lib/queries";
 import { api } from "@/lib/api";
 import { DataTable, type Column } from "@/components/DataTable";
@@ -93,7 +93,6 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
   const [sort, setSort] = usePref<SortKey>(`users.${_prefScope}.sort`, "created_desc");
   // cartões por linha no celular (1, 2 ou 3) — preferência do admin, vale pra todas as abas
   const [cardCols, setCardCols] = usePref<number>("users.cardCols", 1);
-  const isMobile = useIsMobile();
   const [exporting, setExporting] = useState(false);
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
@@ -495,23 +494,7 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
           <button className="btn btn-sm" onClick={exportCsv} disabled={exporting} title="Exportar CSV (filtros atuais)">
             <Download size={12} /> {exporting ? "..." : "CSV"}
           </button>
-          {isMobile && (
-            <div className="cols-toggle" role="group" aria-label="Cartões por linha">
-              <LayoutGrid size={12} />
-              {[1, 2, 3].map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  className={cardCols === n ? "on" : ""}
-                  aria-pressed={cardCols === n}
-                  title={`${n} por linha`}
-                  onClick={() => setCardCols(n)}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          )}
+          <CardColsToggle value={cardCols} onChange={setCardCols} />
         </div>
 
         <DataTable

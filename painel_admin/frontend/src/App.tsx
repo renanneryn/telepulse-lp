@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { Login } from "@/pages/Login";
@@ -6,8 +6,7 @@ import { Dashboard } from "@/pages/Dashboard";
 import { Users, UsersFromUrl } from "@/pages/Users";
 import { Funnel } from "@/pages/Funnel";
 import { UserDetail } from "@/pages/UserDetail";
-import { Tasks } from "@/pages/Tasks";
-import { Clones } from "@/pages/Clones";
+import { Tasks, TASK_SLUGS } from "@/pages/Tasks";
 import { Payments } from "@/pages/Payments";
 import { Broadcast } from "@/pages/Broadcast";
 import { Settings } from "@/pages/Settings";
@@ -23,6 +22,14 @@ const qc = new QueryClient({
     },
   },
 });
+
+/** /tasks/<slug> -> subaba de Tarefas; slug desconhecido volta pra Clone. */
+function TasksFromUrl() {
+  const { slug = "" } = useParams();
+  const tab = TASK_SLUGS[slug];
+  if (!tab) return <Navigate to="/tasks/clones" replace />;
+  return <Tasks key={slug} tab={tab} />;
+}
 
 export default function App() {
   return (
@@ -41,8 +48,10 @@ export default function App() {
             <Route path="/texts" element={<Texts />} />
             <Route path="/flows" element={<Flows />} />
             <Route path="/users/:id" element={<UserDetail />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/clones" element={<Clones />} />
+            <Route path="/tasks" element={<Navigate to="/tasks/clones" replace />} />
+            <Route path="/tasks/:slug" element={<TasksFromUrl />} />
+            {/* endereço antigo de "Clones ao vivo" — agora dentro de Tarefas › Clone */}
+            <Route path="/clones" element={<Navigate to="/tasks/clones" replace />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/broadcast" element={<Broadcast />} />
             <Route path="/settings" element={<Settings />} />

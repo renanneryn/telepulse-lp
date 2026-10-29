@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { usePref } from "@/hooks/usePref";
+import { LiveClones } from "@/pages/Clones";
 import { useNavigate } from "react-router-dom";
 import { Play, Square, XCircle, AlertTriangle } from "lucide-react";
 import {
@@ -61,42 +62,51 @@ function sortActiveFirst<T>(rows: T[], isActive: (r: T) => boolean, on: boolean)
   return [...rows].sort((a, b) => Number(isActive(b)) - Number(isActive(a)));
 }
 
-type Tab = "forwards" | "enc" | "ofertas" | "clones";
+export type Tab = "forwards" | "enc" | "ofertas" | "clones";
 
 const TAB_LABELS: Record<Tab, string> = {
-  forwards: "Mirror",
+  forwards: "Espelhar",
   enc: "Agendar Posts",
   ofertas: "Ofertas Rotativas",
   clones: "Clone",
 };
 
-export function Tasks() {
-  const [tab, setTab] = usePref<Tab>("tasks.tab", "enc");
+// /tasks/<slug> do menu (subabas de TAREFAS) -> painel
+export const TASK_SLUGS: Record<string, Tab> = {
+  clones: "clones",
+  espelhar: "forwards",
+  agendar: "enc",
+  ofertas: "ofertas",
+};
+
+const TAB_SUBTITLE: Record<Tab, string> = {
+  clones: "// ao vivo (memória do bot) + histórico · auto-refresh ativo",
+  forwards: "// espelhamentos em tempo real · auto-refresh ativo",
+  enc: "// postagens automáticas · auto-refresh ativo",
+  ofertas: "// ofertas em rodízio · auto-refresh ativo",
+};
+
+/** Uma subaba de TAREFAS (escolhida no menu). */
+export function Tasks({ tab }: { tab: Tab }) {
   return (
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Tarefas</h1>
-          <div className="page-sub">// monitor de execução · auto-refresh ativo</div>
+          <h1 className="page-title">{tab === "clones" ? "Clones" : TAB_LABELS[tab]}</h1>
+          <div className="page-sub">{TAB_SUBTITLE[tab]}</div>
         </div>
-      </div>
-
-      <div className="tabs">
-        {(["enc", "forwards", "ofertas", "clones"] as Tab[]).map((t) => (
-          <div
-            key={t}
-            className={`tab ${tab === t ? "active" : ""}`}
-            onClick={() => setTab(t)}
-          >
-            {TAB_LABELS[t]}
-          </div>
-        ))}
       </div>
 
       {tab === "enc" && <EncPanel />}
       {tab === "forwards" && <ForwardsPanel />}
       {tab === "ofertas" && <OfertasPanel />}
-      {tab === "clones" && <ClonesPanel />}
+      {tab === "clones" && (
+        <>
+          <LiveClones />
+          <div className="label-caps" style={{ margin: "22px 0 8px", color: "var(--text-dim)" }}>HISTÓRICO</div>
+          <ClonesPanel />
+        </>
+      )}
     </div>
   );
 }

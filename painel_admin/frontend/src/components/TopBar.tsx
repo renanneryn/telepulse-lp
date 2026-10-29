@@ -6,7 +6,6 @@ import { useLogout, type AdminMe } from "@/lib/queries";
 const CRUMBS: Record<string, string> = {
   "/": "DASHBOARD",
   "/funil": "FUNIL",
-  "/clones": "CLONES",
   "/users": "USUÁRIOS",
   "/vips": "USUÁRIOS VIPS",
   "/testers": "USUÁRIOS TESTERS",

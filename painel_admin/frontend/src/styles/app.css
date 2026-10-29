@@ -137,6 +137,16 @@ body::before {
 .nav-caret svg { transition: transform 0.15s var(--ease); }
 .nav-caret.open svg { transform: rotate(180deg); }
 .nav-sub { display: flex; flex-direction: column; gap: 1px; }
+/* título de grupo que só abre/fecha (Tarefas): parece um item do menu */
+.nav-group-toggle {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding-right: 40px;
+}
 .nav-sub.closed { display: none; }
 .nav-sub .nav-item { padding-left: 34px; font-size: var(--fz-xs); }
 .nav-sub .nav-item svg { width: 14px; height: 14px; }
@@ -1625,4 +1635,17 @@ input[type="checkbox"] {
 @media (max-width: 640px) {
   .trial-rules { grid-template-columns: 1fr; }
   .texts-savebar .btn { flex: 1; }
+}
+
+/* cartões em grade: chip + botão do título quebram de linha (não letra a letra) */
+.card-list.grid .data-card-title .row { flex-wrap: wrap; }
+.card-list.grid .btn,
+.card-list.grid .id-chip { white-space: nowrap; }
+
+/* 3 números lado a lado (Tarefas › Clone › ao vivo) */
+.stats-grid.stats-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  .stats-grid.stats-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stats-grid.stats-grid-3 .stat { padding: 12px 10px; }
+  .stats-grid.stats-grid-3 .stat-value { font-size: 24px; }
 }
