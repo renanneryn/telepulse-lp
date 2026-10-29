@@ -3,6 +3,7 @@ import { Save } from "lucide-react";
 import { useSettings, useSetSetting, useBotMode, useSetBotMode } from "@/lib/queries";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { TEXT_SETTING_KEYS } from "@/lib/textFields";
 import { toast } from "@/hooks/useToast";
 
 export function Settings() {
@@ -50,8 +51,9 @@ export function Settings() {
   // Settings que o backend recusa no PUT genérico (mudá-las exige lógica extra).
   // Sem filtrar, o admin via o campo, editava, salvava e levava um 400 cru.
   const PROTECTED = new Set(["bot_mode", "free_mode_since"]);
+  // textos e nomes de botões ficam na tela Textos (com prévia), não aqui
   const entries = Object.entries(q.data ?? {})
-    .filter(([k]) => !PROTECTED.has(k))
+    .filter(([k]) => !PROTECTED.has(k) && !TEXT_SETTING_KEYS.has(k))
     .sort(([a], [b]) => a.localeCompare(b));
 
   // Lockdown: bot trancado quando lockdown != "0" (default LIGADO, mesmo se ausente)
