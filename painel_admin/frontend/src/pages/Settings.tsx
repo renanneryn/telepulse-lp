@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Save } from "lucide-react";
 import { useSettings, useSetSetting, useBotMode, useSetBotMode } from "@/lib/queries";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { toast } from "@/hooks/useToast";
 
 export function Settings() {
@@ -10,6 +11,8 @@ export function Settings() {
   const botMode = useBotMode();
   const setBotMode = useSetBotMode();
   const [edited, setEdited] = useState<Record<string, string>>({});
+  // trancar/liberar e trocar o modo valem para todos os usuários: pede confirmação
+  const [confirm, setConfirm] = useState<null | "lockdown" | "mode">(null);
 
   // M8: NÃO limpar `edited` a cada refetch (q.dataUpdatedAt) — isso apagava
   // edições pendentes de OUTROS campos sempre que qualquer save() disparava um
@@ -125,7 +128,7 @@ export function Settings() {
         </div>
         <button
           className={`btn ${lockdownOn ? "" : "primary"}`}
-          onClick={toggleLockdown}
+          onClick={() => setConfirm("lockdown")}
           disabled={setter.isPending}
         >
           {lockdownOn ? "🔓 Liberar bot" : "🔒 Trancar bot"}
@@ -154,12 +157,37 @@ export function Settings() {
         </div>
         <button
           className={`btn ${freeMode ? "" : "primary"}`}
-          onClick={toggleBotMode}
+          onClick={() => setConfirm("mode")}
           disabled={setBotMode.isPending || botMode.isLoading}
         >
           {freeMode ? "💎 Voltar ao modo pago" : "🎁 Liberar para todos"}
         </button>
       </div>
+
+      <ConfirmDialog
+        open={confirm === "lockdown"}
+        title={lockdownOn ? "Liberar o bot para todos?" : "Trancar o bot?"}
+        body={lockdownOn
+          ? "Qualquer usuário volta a usar o bot normalmente."
+          : "Só assinantes VIP, trial e admins vão usar o bot. As tarefas de quem é FREE são pausadas."}
+        confirmLabel={lockdownOn ? "Liberar" : "Trancar"}
+        danger={!lockdownOn}
+        loading={setter.isPending}
+        onConfirm={async () => { await toggleLockdown(); setConfirm(null); }}
+        onCancel={() => setConfirm(null)}
+      />
+      <ConfirmDialog
+        open={confirm === "mode"}
+        title={freeMode ? "Voltar ao modo pago?" : "Liberar o bot de graça para todos?"}
+        body={freeMode
+          ? "Cada usuário volta a depender do próprio plano. Os planos ativos ganham de volta o tempo em que o bot ficou grátis."
+          : "Todos os usuários passam a funcionar como VIP, e os planos pagos ficam congelados até você voltar ao modo pago."}
+        confirmLabel={freeMode ? "Voltar ao modo pago" : "Liberar para todos"}
+        danger
+        loading={setBotMode.isPending}
+        onConfirm={async () => { await toggleBotMode(); setConfirm(null); }}
+        onCancel={() => setConfirm(null)}
+      />
 
       <div className="table-wrap">
         <table className="table settings-table">
@@ -181,8 +209,9 @@ export function Settings() {
             {entries.map(([key, value]) => {
               const v = edited[key] ?? value;
               const dirty = edited[key] !== undefined && edited[key] !== value;
-              // texto (não número/flag) ganha caixa de várias linhas: no celular um input de uma linha corta tudo
-              const isLong = (v?.length ?? 0) > 24 || (v ?? "").includes("\n");
+              // texto (não número/flag) ganha caixa de várias linhas: no celular um input de uma linha corta tudo.
+              // Decide pelo valor SALVO: pelo digitado, o campo trocava de tipo no 25º caractere e o teclado fechava.
+              const isLong = (value?.length ?? 0) > 24 || (value ?? "").includes("\n");
               return (
                 <tr key={key}>
                   <td className="settings-key">

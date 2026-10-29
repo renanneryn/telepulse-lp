@@ -78,6 +78,9 @@ export function UserDetail() {
 
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
   const [confirmBan, setConfirmBan] = useState(false);
+  // apagar regra e cancelar clone não têm volta: confirma antes
+  const [ruleToDelete, setRuleToDelete] = useState<number | null>(null);
+  const [cloneToCancel, setCloneToCancel] = useState<number | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmDM, setConfirmDM] = useState(false);
   const [dmText, setDmText] = useState("");
@@ -444,7 +447,7 @@ export function UserDetail() {
                     <button
                       className="btn btn-sm icon-only danger"
                       title="cancelar clone"
-                      onClick={() => taskAction(() => cancelClone.mutateAsync(Number(c.id)), `Clone #${c.id} cancelado`)}
+                      onClick={() => setCloneToCancel(Number(c.id))}
                     >
                       <XCircle size={12} />
                     </button>
@@ -679,7 +682,7 @@ export function UserDetail() {
               </div>
               <button
                 className="btn btn-sm icon-only"
-                onClick={() => deleteRule.mutate(r.id)}
+                onClick={() => setRuleToDelete(r.id)}
                 aria-label="excluir"
               >
                 <Trash2 size={12} />
@@ -728,6 +731,41 @@ export function UserDetail() {
         loading={disconnect.isPending}
         onConfirm={handleDisconnect}
         onCancel={() => setConfirmDisconnect(false)}
+      />
+
+      <ConfirmDialog
+        open={ruleToDelete !== null}
+        title="Apagar esta regra?"
+        body="A troca deixa de valer nas próximas mensagens."
+        confirmLabel="APAGAR"
+        danger
+        loading={deleteRule.isPending}
+        onConfirm={async () => {
+          try {
+            await deleteRule.mutateAsync(ruleToDelete as number);
+            toast("ok", "Regra apagada");
+          } catch (e) {
+            toast("err", (e as Error).message);
+          }
+          setRuleToDelete(null);
+        }}
+        onCancel={() => setRuleToDelete(null)}
+      />
+
+      <ConfirmDialog
+        open={cloneToCancel !== null}
+        title={`Cancelar o clone #${cloneToCancel}?`}
+        body="O clone para e não pode ser retomado."
+        confirmLabel="CANCELAR CLONE"
+        cancelLabel="Voltar"
+        danger
+        loading={cancelClone.isPending}
+        onConfirm={async () => {
+          const id = cloneToCancel as number;
+          setCloneToCancel(null);
+          await taskAction(() => cancelClone.mutateAsync(id), `Clone #${id} cancelado`);
+        }}
+        onCancel={() => setCloneToCancel(null)}
       />
 
       <ConfirmDialog
@@ -903,16 +941,17 @@ function PriceEditor({
 }
 
 // epoch (segundos) -> "YYYY-MM-DD" pro input[type=date]
-/** Dias válidos para trial/extensão: inteiro entre 1 e 3650.
+/** Dias válidos para trial/extensão: inteiro entre 1 e `max` (os limites do
+ * servidor: trial até 90, extensão até 365 — acima disso o servidor recusava).
  *
  * `Number("")` é 0 e `Number("abc")` é NaN — ambos passavam direto para o
  * backend (NaN vira null no JSON) e voltavam como erro 422 cru para o admin.
  * Os atributos min/max do <input> não seguram, porque os botões são
  * type="button" fora de um <form>. */
-function clampDays(raw: string): number {
+function clampDays(raw: string, max: number): number {
   const n = Math.floor(Number(raw));
   if (!Number.isFinite(n) || n < 1) return 1;
-  return Math.min(n, 3650);
+  return Math.min(n, max);
 }
 
 function epochToDateInput(epoch: number | undefined | null): string {
@@ -1152,7 +1191,7 @@ function PlanEditor({
             max={90}
             style={{ width: 70 }}
             value={trialDays}
-            onChange={(e) => setTrialDays(clampDays(e.target.value))}
+            onChange={(e) => setTrialDays(clampDays(e.target.value, 90))}
           />
           <button
             type="button"
@@ -1174,7 +1213,7 @@ function PlanEditor({
             max={365}
             style={{ width: 70 }}
             value={extendDays}
-            onChange={(e) => setExtendDays(clampDays(e.target.value))}
+            onChange={(e) => setExtendDays(clampDays(e.target.value, 365))}
           />
           <button
             type="button"

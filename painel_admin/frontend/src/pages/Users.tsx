@@ -157,7 +157,10 @@ export function Users({ vipOnly = false, testersOnly = false, expiredOnly = fals
   }
 
   function csvCell(v: unknown): string {
-    const s = v === null || v === undefined ? "" : String(v);
+    let s = v === null || v === undefined ? "" : String(v);
+    // nome de usuário começando com = + - @ vira fórmula no Excel/Sheets
+    // (ex.: =HYPERLINK(...)): o apóstrofo faz a planilha tratar como texto
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
     return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }
 

@@ -257,16 +257,16 @@ export function useLogout() {
 
 /* ──────────────  Stats ────────────── */
 
+/** Fuso do navegador em minutos (Brasil = -180): os dias viram à meia-noite local. */
+const TZ_OFFSET_MIN = -new Date().getTimezoneOffset();
+
 export function useStats() {
   return useQuery<Stats>({
     queryKey: ["stats"],
-    queryFn: () => api<Stats>("/api/stats"),
+    queryFn: () => api<Stats>("/api/stats", { query: { tz_offset_min: TZ_OFFSET_MIN } }),
     refetchInterval: 15_000,
   });
 }
-
-/** Fuso do navegador em minutos (Brasil = -180): os dias viram à meia-noite local. */
-const TZ_OFFSET_MIN = -new Date().getTimezoneOffset();
 
 export type TsMetric = "signups" | "connects" | "clones" | "payments";
 

@@ -19,6 +19,7 @@ import { StatusTag } from "@/components/Tag";
 import { PulseDot } from "@/components/PulseDot";
 import { IdChip } from "@/components/IdChip";
 import { CloneErrorsModal } from "@/components/CloneErrorsModal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { fmtDate, fmtNum } from "@/lib/format";
 import { toast } from "@/hooks/useToast";
 
@@ -117,6 +118,7 @@ function ClonesPanel() {
   const q = useClones({ status: status || undefined, limit: 200 });
   const cancel = useCancelClone();
   const [errorsFor, setErrorsFor] = useState<number | null>(null);
+  const [toCancel, setToCancel] = useState<number | null>(null);   // cancelar não tem volta: confirma
 
   const cols: Column<CloneTask>[] = [
     { key: "id", hideOnMobile: true, header: "ID", render: (r) => <span className="num td-id">#{r.id}</span>, width: "80px" },
@@ -151,14 +153,7 @@ function ClonesPanel() {
           {(r.status === "running" || r.status === "pending") && (
             <button
               className="btn btn-sm icon-only danger"
-              onClick={async () => {
-                try {
-                  await cancel.mutateAsync(r.id);
-                  toast("ok", `Clone #${r.id} cancelado`);
-                } catch (e) {
-                  toast("err", (e as Error).message);
-                }
-              }}
+              onClick={() => setToCancel(r.id)}
               title="cancelar"
             >
               <XCircle size={12} />
@@ -183,6 +178,26 @@ function ClonesPanel() {
       </div>
       <DataTable rows={q.data ?? []} cols={cols} loading={q.isLoading} rowKey={(r) => r.id} empty="Nenhum clone." />
       {errorsFor && <CloneErrorsModal taskId={errorsFor} onClose={() => setErrorsFor(null)} />}
+      <ConfirmDialog
+        open={toCancel !== null}
+        title={`Cancelar o clone #${toCancel}?`}
+        body="O clone para e não pode ser retomado."
+        confirmLabel="CANCELAR CLONE"
+        cancelLabel="Voltar"
+        danger
+        loading={cancel.isPending}
+        onConfirm={async () => {
+          const id = toCancel as number;
+          try {
+            await cancel.mutateAsync(id);
+            toast("ok", `Clone #${id} cancelado`);
+          } catch (e) {
+            toast("err", (e as Error).message);
+          }
+          setToCancel(null);
+        }}
+        onCancel={() => setToCancel(null)}
+      />
     </div>
   );
 }

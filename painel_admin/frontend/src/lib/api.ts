@@ -44,6 +44,22 @@ function buildUrl(path: string, query?: Record<string, unknown>) {
   return url.toString();
 }
 
+/** Mensagem legível do erro. Os 422 do FastAPI mandam `detail` como lista de
+ * objetos ({loc, msg}), que virava "[object Object]" no toast. */
+function errorDetail(parsed: unknown): string | null {
+  if (!parsed || typeof parsed !== "object" || !("detail" in parsed)) return null;
+  const d = (parsed as { detail: unknown }).detail;
+  if (Array.isArray(d)) {
+    const first = d[0] as { msg?: unknown; loc?: unknown } | undefined;
+    if (first && typeof first === "object" && first.msg) {
+      const field = Array.isArray(first.loc) ? first.loc[first.loc.length - 1] : "";
+      return field ? `${String(field)}: ${String(first.msg)}` : String(first.msg);
+    }
+    return "Dados inválidos";
+  }
+  return d === undefined || d === null ? null : String(d);
+}
+
 export async function api<T = unknown>(path: string, init: Init = {}): Promise<T> {
   const headers = new Headers(init.headers || {});
   for (const [k, v] of Object.entries(authHeaders())) headers.set(k, v);
@@ -80,10 +96,7 @@ export async function api<T = unknown>(path: string, init: Init = {}): Promise<T
     if (res.status === 401) {
       window.dispatchEvent(new CustomEvent("tlp:unauthenticated"));
     }
-    const detail =
-      (parsed && typeof parsed === "object" && "detail" in parsed
-        ? String((parsed as { detail: unknown }).detail)
-        : null) || `HTTP ${res.status}`;
+    const detail = errorDetail(parsed) || `HTTP ${res.status}`;
     throw new ApiError(detail, res.status, parsed);
   }
 
