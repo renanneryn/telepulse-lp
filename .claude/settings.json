@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 120,
+            "command": "P=$(command -v python || command -v python3); \"$P\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/sincronia.py\" inicio"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 60,
+            "command": "P=$(command -v python || command -v python3); \"$P\" \"$CLAUDE_PROJECT_DIR/.claude/hooks/sincronia.py\" fim"
+          }
+        ]
+      }
+    ]
+  }
+}
