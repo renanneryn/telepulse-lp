@@ -5,7 +5,7 @@ import cors from "cors";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import * as dotenv from "dotenv";
-import { createChatReply } from "./api/chat";
+import { createChatReply, guardChatRequest } from "./api/chat";
 
 dotenv.config();
 
@@ -20,7 +20,12 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.post("/api/chat", async (req, res) => {
+app.all("/api/chat", async (req, res) => {
+  const blocked = guardChatRequest({ method: req.method, headers: req.headers, body: req.body, ip: req.socket.remoteAddress });
+  if (blocked) {
+    res.set(blocked.headers || {});
+    return res.status(blocked.status).json(blocked.body);
+  }
   try {
     const result = await createChatReply(req.body?.messages);
     res.status(result.status).json(result.body);
