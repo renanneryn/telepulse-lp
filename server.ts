@@ -5,7 +5,6 @@ import cors from "cors";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import * as dotenv from "dotenv";
-import { createChatReply, guardChatRequest } from "./api/chat";
 
 dotenv.config();
 
@@ -18,24 +17,6 @@ app.use(express.json({ limit: '50mb' }));
 // API routes
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
-});
-
-app.all("/api/chat", async (req, res) => {
-  const blocked = guardChatRequest({ method: req.method, headers: req.headers, body: req.body, ip: req.socket.remoteAddress });
-  if (blocked) {
-    res.set(blocked.headers || {});
-    return res.status(blocked.status).json(blocked.body);
-  }
-  try {
-    const result = await createChatReply(req.body?.messages);
-    res.status(result.status).json(result.body);
-  } catch (error: any) {
-    console.error("[chat] failed:", error?.message || error);
-    res.status(500).json({
-      error: "chat_internal_error",
-      message: "Chat IA indisponivel no momento.",
-    });
-  }
 });
 
 // Telegram session management (simplified for demo)
