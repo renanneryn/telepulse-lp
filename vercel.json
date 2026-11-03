@@ -8,11 +8,20 @@
   "rewrites": [
     { "source": "/admin/api/:path*", "destination": "/api/proxy" },
     { "source": "/admin/assets/:path*", "destination": "/admin-current/assets/:path*" },
+    { "source": "/admin/manifest.webmanifest", "destination": "/admin-current/manifest.webmanifest" },
+    { "source": "/admin/sw.js", "destination": "/admin-current/sw.js" },
+    { "source": "/admin/icon-192.png", "destination": "/admin-current/icon-192.png" },
+    { "source": "/admin/icon-512.png", "destination": "/admin-current/icon-512.png" },
+    { "source": "/admin/icon-maskable-512.png", "destination": "/admin-current/icon-maskable-512.png" },
     { "source": "/admin/", "destination": "/admin-current/index.html" },
     { "source": "/admin/:path*", "destination": "/admin-current/index.html" },
     { "source": "/:path*", "destination": "/index.html" }
   ],
   "headers": [
+    {
+      "source": "/admin/sw.js",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    },
     {
       "source": "/admin",
       "headers": [
